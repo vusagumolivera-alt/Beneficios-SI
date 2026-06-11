@@ -23,6 +23,9 @@ export default function ComercioForm({ initial = {}, onSubmit, onCancel, submitL
     dias_validos: initial.dias_validos || '',
     medios_pago: initial.medios_pago || '',
     condiciones: initial.condiciones || '',
+    imagen_url: initial.imagen_url || '',
+    instagram_url: initial.instagram_url || '',
+    website_url: initial.website_url || '',
     publicado: initial.publicado ?? true,
     nuevo: initial.nuevo ?? true,
   })
@@ -52,6 +55,8 @@ export default function ComercioForm({ initial = {}, onSubmit, onCancel, submitL
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        {/* Info básica */}
         <div className="sm:col-span-2">
           <label className="block text-xs font-semibold text-slate-600 mb-1">Nombre del comercio *</label>
           <input required value={form.nombre} onChange={set('nombre')} className={inputCls}
@@ -106,7 +111,34 @@ export default function ComercioForm({ initial = {}, onSubmit, onCancel, submitL
             placeholder="Describí las condiciones del beneficio..." />
         </div>
 
-        <div className="flex items-center gap-6">
+        {/* Links y multimedia */}
+        <div className="sm:col-span-2 border-t border-[#d9ede2] pt-3">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Links y multimedia</p>
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-semibold text-slate-600 mb-1">🖼️ URL de imagen</label>
+          <input value={form.imagen_url} onChange={set('imagen_url')} className={inputCls}
+            placeholder="https://... (foto del local o logo)" />
+          {form.imagen_url && (
+            <img src={form.imagen_url} alt="preview" className="mt-2 h-24 w-full object-cover rounded-lg border border-[#d9ede2]" />
+          )}
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">📸 Instagram</label>
+          <input value={form.instagram_url} onChange={set('instagram_url')} className={inputCls}
+            placeholder="https://instagram.com/..." />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">🌐 Sitio web</label>
+          <input value={form.website_url} onChange={set('website_url')} className={inputCls}
+            placeholder="https://..." />
+        </div>
+
+        {/* Estado */}
+        <div className="sm:col-span-2 flex items-center gap-6">
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.publicado} onChange={setBool('publicado')}
               className="w-4 h-4 rounded accent-[#25a35f]" />

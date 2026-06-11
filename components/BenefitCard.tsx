@@ -26,7 +26,6 @@ const RUBRO_ICONS: Record<string, string> = {
   'Pastas': '🍝',
   'Veterinaria': '🐾',
   'Aves': '🐔',
-  'Helados': '🍦',
 }
 
 function getRubroIcon(rubro: string) {
@@ -44,6 +43,11 @@ const LOCALIDAD_COLORS: Record<string, string> = {
   'Acassuso': 'bg-lime-100 text-lime-800',
 }
 
+function mapsUrl(direccion: string, localidad: string) {
+  const q = encodeURIComponent(`${direccion}, ${localidad}, Buenos Aires, Argentina`)
+  return `https://www.google.com/maps/search/?api=1&query=${q}`
+}
+
 export default function BenefitCard({ comercio }: { comercio: Comercio }) {
   const [expanded, setExpanded] = useState(false)
   const icon = getRubroIcon(comercio.rubro)
@@ -51,6 +55,17 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-[#d9ede2] flex flex-col overflow-hidden hover:shadow-md transition-shadow duration-200">
+      {/* Imagen */}
+      {comercio.imagen_url ? (
+        <div className="h-36 overflow-hidden bg-slate-100">
+          <img
+            src={comercio.imagen_url}
+            alt={comercio.nombre}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ) : null}
+
       {/* Header strip */}
       <div className="bg-[#1d5c3a] px-5 py-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
@@ -99,7 +114,7 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
           <div className="mt-1">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-xs text-[#25a35f] font-medium hover:underline flex items-center gap-1"
+              className="text-xs text-[#25a35f] font-medium hover:underline"
             >
               {expanded ? '▲ Ocultar condiciones' : '▼ Ver condiciones'}
             </button>
@@ -113,10 +128,49 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
       </div>
 
       {/* Footer */}
-      <div className="px-5 pb-4">
+      <div className="px-5 pb-4 flex items-center justify-between gap-2 flex-wrap">
         <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${locColor}`}>
           📌 {comercio.localidad}
         </span>
+
+        <div className="flex items-center gap-2">
+          {/* Google Maps — siempre visible */}
+          <a
+            href={mapsUrl(comercio.direccion, comercio.localidad)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-[#1d5c3a] bg-slate-100 hover:bg-[#d9ede2] px-2.5 py-1 rounded-full transition-colors"
+            title="Ver en Google Maps"
+          >
+            🗺️ Maps
+          </a>
+
+          {/* Instagram */}
+          {comercio.instagram_url && (
+            <a
+              href={comercio.instagram_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-pink-600 bg-slate-100 hover:bg-pink-50 px-2.5 py-1 rounded-full transition-colors"
+              title="Ver en Instagram"
+            >
+              📸 Instagram
+            </a>
+          )}
+
+          {/* Web */}
+          {comercio.website_url && (
+            <a
+              href={comercio.website_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-[#1d5c3a] bg-slate-100 hover:bg-[#d9ede2] px-2.5 py-1 rounded-full transition-colors"
+              title="Sitio web"
+            >
+              🌐 Web
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )

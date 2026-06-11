@@ -11,6 +11,9 @@ export type Comercio = {
   dias_validos: string
   medios_pago: string
   condiciones: string
+  imagen_url: string
+  instagram_url: string
+  website_url: string
   publicado: boolean
   nuevo: boolean
   created_at: string
