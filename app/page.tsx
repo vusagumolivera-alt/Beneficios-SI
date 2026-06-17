@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
+import HeroCarousel from '@/components/HeroCarousel'
 import type { Comercio } from '@/lib/supabase'
 
 const RUBRO_CHIPS = [
@@ -56,9 +57,6 @@ export default function HomePage() {
     return result
   }, [comercios, filters, rubroChip])
 
-  const topDeal = useMemo(() =>
-    [...comercios].sort((a, b) => b.descuento - a.descuento)[0], [comercios])
-
   const nuevos = filtered.filter(c => c.nuevo)
   const isFiltering = filters.search || filters.rubro || filters.localidad || filters.descuento || rubroChip
 
@@ -103,29 +101,9 @@ export default function HomePage() {
 
       <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
-        {/* Banner destacado — mejor deal */}
-        {!loading && topDeal && !isFiltering && (
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1d5c3a] to-[#1a7a4a] p-5 flex items-center gap-4 shadow-md">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-white/30" />
-              <div className="absolute top-8 -right-8 w-20 h-20 rounded-full bg-white/20" />
-            </div>
-            <div className="w-14 h-14 rounded-2xl bg-white shadow-md overflow-hidden shrink-0">
-              {topDeal.imagen_url
-                ? <img src={topDeal.imagen_url} alt={topDeal.nombre} className="w-full h-full object-cover" />
-                : <div className="w-full h-full bg-white/20 flex items-center justify-center text-white font-black text-xl">{topDeal.nombre[0]}</div>
-              }
-            </div>
-            <div className="flex-1 min-w-0 relative z-10">
-              <p className="text-green-300 text-[10px] font-bold uppercase tracking-widest">🔥 Mejor descuento del mes</p>
-              <h3 className="text-white font-bold text-base leading-tight truncate">{topDeal.nombre}</h3>
-              <p className="text-green-200 text-xs truncate">{topDeal.descripcion_descuento}</p>
-            </div>
-            <div className="shrink-0 relative z-10 text-right">
-              <p className="text-white font-black text-4xl leading-none">{topDeal.descuento}%</p>
-              <p className="text-green-300 text-xs font-bold">OFF</p>
-            </div>
-          </div>
+        {/* Carousel de marketing */}
+        {!isFiltering && (
+          <HeroCarousel onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })} />
         )}
 
         <Filters filters={filters} onChange={setFilters} rubros={rubros} localidades={localidades} />
@@ -146,7 +124,7 @@ export default function HomePage() {
             </button>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div id="comercios-section" className="space-y-5">
             {/* Sección Nuevos — solo cuando no se filtra */}
             {nuevos.length > 0 && !isFiltering && filters.orden !== 'nuevo' && (
               <section>
