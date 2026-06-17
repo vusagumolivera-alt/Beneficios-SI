@@ -3,44 +3,12 @@
 import { useState } from 'react'
 import type { Comercio } from '@/lib/supabase'
 
-const RUBRO_ICONS: Record<string, string> = {
-  'Peluquería': '✂️',
-  'Textiles': '👗',
-  'Deportes': '⛺',
-  'Danzas': '💃',
-  'Kiosco': '🗞️',
-  'Comidas': '🥡',
-  'Gastronomía': '🍽️',
-  'Indumentaria': '👕',
-  'Vidrios': '🪟',
-  'Óptica': '👓',
-  'Audio': '📺',
-  'Centro cultural': '🎭',
-  'Decoración': '🎁',
-  'Juguetería': '🧸',
-  'Zapatería': '👟',
-  'Almacén': '🌿',
-  'Heladería': '🍦',
-  'Panadería': '🥐',
-  'Automotores': '🏍️',
-  'Pastas': '🍝',
-  'Veterinaria': '🐾',
-  'Aves': '🐔',
-}
-
-function getRubroIcon(rubro: string) {
-  for (const [key, icon] of Object.entries(RUBRO_ICONS)) {
-    if (rubro.toLowerCase().includes(key.toLowerCase())) return icon
-  }
-  return '🏪'
-}
-
 const LOCALIDAD_COLORS: Record<string, string> = {
-  'San Isidro': 'bg-green-100 text-green-800',
-  'Martínez': 'bg-teal-100 text-teal-800',
-  'Boulogne': 'bg-emerald-100 text-emerald-800',
-  'Beccar': 'bg-amber-100 text-amber-800',
-  'Acassuso': 'bg-lime-100 text-lime-800',
+  'San Isidro': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  'Martínez':   'bg-teal-50 text-teal-700 border-teal-200',
+  'Boulogne':   'bg-green-50 text-green-700 border-green-200',
+  'Beccar':     'bg-lime-50 text-lime-700 border-lime-200',
+  'Acassuso':   'bg-cyan-50 text-cyan-700 border-cyan-200',
 }
 
 function mapsUrl(direccion: string, localidad: string) {
@@ -48,65 +16,73 @@ function mapsUrl(direccion: string, localidad: string) {
   return `https://www.google.com/maps/search/?api=1&query=${q}`
 }
 
+function Initials({ nombre }: { nombre: string }) {
+  const words = nombre.trim().split(/\s+/)
+  const letters = words.length >= 2
+    ? words[0][0] + words[1][0]
+    : words[0].slice(0, 2)
+  return (
+    <div className="w-full h-full bg-gradient-to-br from-[#1d5c3a] to-[#25a35f] flex items-center justify-center">
+      <span className="text-white font-black text-xl tracking-wide uppercase">{letters}</span>
+    </div>
+  )
+}
+
 export default function BenefitCard({ comercio }: { comercio: Comercio }) {
   const [expanded, setExpanded] = useState(false)
-  const icon = getRubroIcon(comercio.rubro)
-  const locColor = LOCALIDAD_COLORS[comercio.localidad] || 'bg-slate-100 text-slate-700'
+  const [imgError, setImgError] = useState(false)
+  const locColor = LOCALIDAD_COLORS[comercio.localidad] || 'bg-slate-50 text-slate-600 border-slate-200'
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-[#d9ede2] flex flex-col overflow-hidden hover:shadow-md transition-shadow duration-200">
-      {/* Imagen */}
-      {comercio.imagen_url ? (
-        <div className="h-36 overflow-hidden bg-slate-100">
-          <img
-            src={comercio.imagen_url}
-            alt={comercio.nombre}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : null}
+    <div className="bg-white rounded-2xl shadow-sm border border-[#e2ede8] flex flex-col overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
 
-      {/* Header strip */}
-      <div className="bg-[#1d5c3a] px-5 py-4 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="text-2xl shrink-0">{icon}</span>
-          <div className="min-w-0">
-            <h3 className="font-bold text-white text-sm leading-tight truncate">{comercio.nombre}</h3>
-            <p className="text-green-200 text-xs mt-0.5 line-clamp-2">{comercio.rubro}</p>
-          </div>
+      {/* Header verde */}
+      <div className="bg-gradient-to-br from-[#1d5c3a] to-[#236b43] h-16 relative shrink-0">
+        <div className="absolute top-2 right-3 bg-white/95 backdrop-blur rounded-xl px-2.5 py-1 shadow-sm">
+          <span className="text-[#1d5c3a] font-black text-base leading-none">{comercio.descuento}%</span>
+          <span className="text-[#25a35f] text-[10px] font-bold ml-0.5">OFF</span>
         </div>
-        <div className="shrink-0 text-right">
-          <span className="text-2xl font-black text-white leading-none">{comercio.descuento}%</span>
-          <p className="text-green-200 text-xs">OFF</p>
+        {comercio.nuevo && (
+          <div className="absolute top-2 left-3 bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">
+            NUEVO
+          </div>
+        )}
+      </div>
+
+      {/* Logo circular centrado, superpuesto */}
+      <div className="flex justify-center -mt-8 px-4 relative z-10 shrink-0">
+        <div className="w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-white shrink-0">
+          {comercio.imagen_url && !imgError ? (
+            <img
+              src={comercio.imagen_url}
+              alt={comercio.nombre}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <Initials nombre={comercio.nombre} />
+          )}
         </div>
       </div>
 
-      {/* Body */}
-      <div className="px-5 py-4 flex flex-col gap-3 flex-1">
-        {comercio.nuevo && (
-          <span className="inline-flex w-fit items-center gap-1 bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-0.5 rounded-full border border-amber-200">
-            ✨ Nuevo
+      {/* Info */}
+      <div className="px-4 pt-2 pb-3 flex flex-col gap-1 flex-1 text-center">
+        <h3 className="font-bold text-[#1d2d24] text-sm leading-tight line-clamp-2">{comercio.nombre}</h3>
+        <p className="text-xs text-slate-400 line-clamp-1">{comercio.rubro}</p>
+        <p className="text-[#1d5c3a] font-semibold text-xs mt-1 line-clamp-2">{comercio.descripcion_descuento}</p>
+
+        <div className="flex items-center justify-center gap-1 mt-1">
+          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${locColor}`}>
+            📍 {comercio.localidad}
           </span>
-        )}
+        </div>
 
-        <p className="text-[#1d5c3a] font-semibold text-sm">{comercio.descripcion_descuento}</p>
-
-        <div className="space-y-2 text-xs text-slate-600">
-          <div className="flex items-start gap-2">
-            <span className="shrink-0">📍</span>
-            <span>{comercio.direccion}</span>
-          </div>
+        <div className="mt-1 space-y-0.5">
           {comercio.dias_validos && (
-            <div className="flex items-start gap-2">
-              <span className="shrink-0">📅</span>
-              <span>{comercio.dias_validos}</span>
-            </div>
+            <p className="text-[10px] text-slate-400">📅 {comercio.dias_validos}</p>
           )}
           {comercio.medios_pago && (
-            <div className="flex items-start gap-2">
-              <span className="shrink-0">💳</span>
-              <span className="line-clamp-2">{comercio.medios_pago}</span>
-            </div>
+            <p className="text-[10px] text-slate-400 line-clamp-1">💳 {comercio.medios_pago}</p>
           )}
         </div>
 
@@ -114,12 +90,12 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
           <div className="mt-1">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-xs text-[#25a35f] font-medium hover:underline"
+              className="text-[10px] text-[#25a35f] font-medium hover:underline"
             >
               {expanded ? '▲ Ocultar condiciones' : '▼ Ver condiciones'}
             </button>
             {expanded && (
-              <p className="mt-2 text-xs text-slate-600 bg-slate-50 rounded-lg p-3 leading-relaxed border border-slate-100">
+              <p className="mt-1 text-[10px] text-slate-500 bg-slate-50 rounded-lg p-2 leading-relaxed text-left border border-slate-100">
                 {comercio.condiciones}
               </p>
             )}
@@ -127,50 +103,42 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="px-5 pb-4 flex items-center justify-between gap-2 flex-wrap">
-        <span className={`inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${locColor}`}>
-          📌 {comercio.localidad}
-        </span>
-
-        <div className="flex items-center gap-2">
-          {/* Google Maps — siempre visible */}
-          <a
-            href={mapsUrl(comercio.direccion, comercio.localidad)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-[#1d5c3a] bg-slate-100 hover:bg-[#d9ede2] px-2.5 py-1 rounded-full transition-colors"
-            title="Ver en Google Maps"
-          >
-            🗺️ Maps
-          </a>
-
-          {/* Instagram */}
-          {comercio.instagram_url && (
+      {/* Footer acciones */}
+      <div className="border-t border-[#e8f2ec] flex shrink-0">
+        <a
+          href={mapsUrl(comercio.direccion, comercio.localidad)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
+        >
+          <span>🗺️</span> Maps
+        </a>
+        {comercio.instagram_url && (
+          <>
+            <div className="w-px bg-[#e8f2ec]" />
             <a
               href={comercio.instagram_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-pink-600 bg-slate-100 hover:bg-pink-50 px-2.5 py-1 rounded-full transition-colors"
-              title="Ver en Instagram"
+              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
             >
-              📸 Instagram
+              <span>📸</span> Instagram
             </a>
-          )}
-
-          {/* Web */}
-          {comercio.website_url && (
+          </>
+        )}
+        {comercio.website_url && (
+          <>
+            <div className="w-px bg-[#e8f2ec]" />
             <a
               href={comercio.website_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-[#1d5c3a] bg-slate-100 hover:bg-[#d9ede2] px-2.5 py-1 rounded-full transition-colors"
-              title="Sitio web"
+              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
             >
-              🌐 Web
+              <span>🌐</span> Web
             </a>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   )
