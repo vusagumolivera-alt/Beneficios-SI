@@ -120,9 +120,14 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
               href={comercio.instagram_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-pink-50 hover:text-pink-600 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium transition-all group"
+              style={{background: 'transparent'}}
             >
-              <span>📸</span> Instagram
+              <span className="text-slate-400 group-hover:hidden">📸</span>
+              <span className="hidden group-hover:inline text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 font-bold">📸</span>
+              <span className="text-slate-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:via-pink-500 group-hover:to-orange-400 group-hover:font-bold">
+                Instagram
+              </span>
             </a>
           </>
         )}
