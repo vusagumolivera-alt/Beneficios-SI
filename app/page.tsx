@@ -6,17 +6,21 @@ import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
 import type { Comercio } from '@/lib/supabase'
 
+// Quita tildes para comparar sin distinguir acentos
+function norm(s: string) {
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+
+// value: palabras clave separadas por | (sin tildes)
 const RUBRO_CHIPS = [
-  { label: 'Todos', value: '', icon: '🏪' },
-  { label: 'Gastronomía', value: 'gastronomia', icon: '🍽️' },
-  { label: 'Belleza', value: 'belleza', icon: '💅' },
-  { label: 'Indumentaria', value: 'indumentaria', icon: '👗' },
-  { label: 'Heladerías', value: 'helado', icon: '🍦' },
-  { label: 'Deportes', value: 'camping', icon: '⛺' },
-  { label: 'Óptica', value: 'ptica', icon: '👓' },
-  { label: 'Electro', value: 'audio', icon: '📺' },
-  { label: 'Pastas', value: 'pastas', icon: '🍝' },
-  { label: 'Veterinaria', value: 'veterinaria', icon: '🐾' },
+  { label: 'Todos',       value: '',                                        icon: '🏪' },
+  { label: 'Comida',      value: 'gastronomia|comidas|panaderia|pasta|fruteria', icon: '🍽️' },
+  { label: 'Belleza',     value: 'peluqueria|belleza',                      icon: '💅' },
+  { label: 'Moda',        value: 'indumentaria|textil|zapateria|moda',      icon: '👗' },
+  { label: 'Helados',     value: 'helad',                                   icon: '🍦' },
+  { label: 'Electro',     value: 'audio|iluminacion|electr',                icon: '📺' },
+  { label: 'Niños',       value: 'jugueteria',                              icon: '🧸' },
+  { label: 'Almacén',     value: 'almacen|dietetic|kiosco',                 icon: '🛒' },
 ]
 
 export default function HomePage() {
@@ -44,7 +48,11 @@ export default function HomePage() {
       if (filters.search && !c.nombre.toLowerCase().includes(filters.search.toLowerCase()) &&
           !c.rubro.toLowerCase().includes(filters.search.toLowerCase())) return false
       if (filters.rubro && c.rubro !== filters.rubro) return false
-      if (rubroChip && !c.rubro.toLowerCase().includes(rubroChip)) return false
+      if (rubroChip) {
+        const rubroNorm = norm(c.rubro)
+        const keywords = rubroChip.split('|')
+        if (!keywords.some(kw => rubroNorm.includes(kw))) return false
+      }
       if (filters.localidad && c.localidad !== filters.localidad) return false
       if (filters.descuento && c.descuento < parseInt(filters.descuento)) return false
       return true
