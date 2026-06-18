@@ -1,18 +1,16 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { SpinnerGap, MagnifyingGlass } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
 import type { Comercio } from '@/lib/supabase'
 
-// Quita tildes para comparar sin distinguir acentos
 function norm(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
-// value: palabras clave separadas por | (sin tildes)
 const RUBRO_CHIPS = [
   { label: 'Todos',    value: '' },
   { label: 'Comida',   value: 'gastronomia|comidas|panaderia|pasta|fruteria' },
@@ -20,23 +18,39 @@ const RUBRO_CHIPS = [
   { label: 'Moda',     value: 'indumentaria|textil|zapateria|moda' },
   { label: 'Helados',  value: 'helad' },
   { label: 'Electro',  value: 'audio|iluminacion|electr' },
-  { label: 'Ninos',    value: 'jugueteria' },
-  { label: 'Almacen',  value: 'almacen|dietetic|kiosco' },
+  { label: 'Niños',    value: 'jugueteria' },
+  { label: 'Almacén',  value: 'almacen|dietetic|kiosco' },
 ]
+
+const EMPTY_FILTERS: FilterState = { search: '', rubro: '', localidad: '', descuento: '', orden: 'descuento' }
 
 export default function HomePage() {
   const [comercios, setComercios] = useState<Comercio[]>([])
   const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState<FilterState>({
-    search: '', rubro: '', localidad: '', descuento: '', orden: 'descuento',
-  })
-  const [rubroChip, setRubroChip] = useState('')
+  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+  const [activeChips, setActiveChips] = useState<string[]>([])
 
   useEffect(() => {
     fetch('/api/comercios')
       .then(r => r.json())
       .then(d => { setComercios(Array.isArray(d) ? d : []); setLoading(false) })
       .catch(() => setLoading(false))
+  }, [])
+
+  const resetAll = useCallback(() => {
+    setFilters(EMPTY_FILTERS)
+    setActiveChips([])
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const toggleChip = useCallback((value: string) => {
+    if (value === '') {
+      setActiveChips([])
+      return
+    }
+    setActiveChips(prev =>
+      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+    )
   }, [])
 
   const rubros = useMemo(() =>
@@ -49,10 +63,13 @@ export default function HomePage() {
       if (filters.search && !c.nombre.toLowerCase().includes(filters.search.toLowerCase()) &&
           !c.rubro.toLowerCase().includes(filters.search.toLowerCase())) return false
       if (filters.rubro && c.rubro !== filters.rubro) return false
-      if (rubroChip) {
+      if (activeChips.length > 0) {
         const rubroNorm = norm(c.rubro)
-        const keywords = rubroChip.split('|')
-        if (!keywords.some(kw => rubroNorm.includes(kw))) return false
+        const matchesAny = activeChips.some(chipValue => {
+          const keywords = chipValue.split('|')
+          return keywords.some(kw => rubroNorm.includes(kw))
+        })
+        if (!matchesAny) return false
       }
       if (filters.localidad && c.localidad !== filters.localidad) return false
       if (filters.descuento && c.descuento < parseInt(filters.descuento)) return false
@@ -64,24 +81,24 @@ export default function HomePage() {
     else if (filters.orden === 'nuevo') result = [...result].sort((a, b) => (b.nuevo ? 1 : 0) - (a.nuevo ? 1 : 0))
 
     return result
-  }, [comercios, filters, rubroChip])
+  }, [comercios, filters, activeChips])
 
   const nuevos = filtered.filter(c => c.nuevo)
-  const isFiltering = filters.search || filters.rubro || filters.localidad || filters.descuento || rubroChip
+  const isFiltering = !!(filters.search || filters.rubro || filters.localidad || filters.descuento || activeChips.length > 0)
 
   return (
     <div className="min-h-screen bg-[#f4faf7]">
 
-      {/* Header sticky */}
       <header className="bg-[#1d5c3a] text-white sticky top-0 z-30 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
-          {/* Logo Mi San Isidro */}
-          <img
-            src="/logo-msi.png"
-            alt="Mi San Isidro"
-            className="h-9 w-auto shrink-0"
-            style={{ filter: 'brightness(0) invert(1)' }}
-          />
+          <button onClick={resetAll} className="shrink-0 hover:opacity-80 transition-opacity" aria-label="Volver al inicio">
+            <img
+              src="/logo-msi.png"
+              alt="Mi San Isidro"
+              className="h-9 w-auto"
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
+          </button>
           <div className="min-w-0 flex-1">
             <h1 className="text-base font-bold leading-none">Beneficios para empleados</h1>
           </div>
@@ -93,29 +110,33 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Chips de rubro — estilo tab limpio sin emojis */}
+        {/* Chips — centrados en desktop, scroll en móvil */}
         <div className="border-t border-white/10 overflow-x-auto" style={{scrollbarWidth:'none'}}>
-          <div className="flex gap-1 px-4 py-2 w-max">
-            {RUBRO_CHIPS.map(chip => (
-              <button
-                key={chip.value}
-                onClick={() => setRubroChip(chip.value)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-150 ${
-                  rubroChip === chip.value
-                    ? 'bg-white text-[#1d5c3a] shadow-sm'
-                    : 'text-white/65 hover:text-white hover:bg-white/15'
-                }`}
-              >
-                {chip.label}
-              </button>
-            ))}
+          <div className="flex gap-1 px-4 py-2 w-max sm:w-auto sm:justify-center sm:flex-wrap">
+            {RUBRO_CHIPS.map(chip => {
+              const isActive = chip.value === ''
+                ? activeChips.length === 0
+                : activeChips.includes(chip.value)
+              return (
+                <button
+                  key={chip.value}
+                  onClick={() => toggleChip(chip.value)}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-150 ${
+                    isActive
+                      ? 'bg-white text-[#1d5c3a] shadow-sm'
+                      : 'text-white/65 hover:text-white hover:bg-white/15'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              )
+            })}
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
-        {/* Carousel de marketing */}
         {!isFiltering && (
           <HeroCarousel onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })} />
         )}
@@ -132,18 +153,15 @@ export default function HomePage() {
             <MagnifyingGlass size={40} className="mx-auto mb-3 text-slate-300" weight="regular" />
             <p className="font-medium text-slate-600">No se encontraron comercios</p>
             <p className="text-sm mt-1">Proba con otros filtros</p>
-            <button onClick={() => { setFilters({ search:'', rubro:'', localidad:'', descuento:'', orden:'descuento' }); setRubroChip('') }}
-              className="mt-3 text-sm text-[#25a35f] font-semibold hover:underline">
+            <button onClick={resetAll} className="mt-3 text-sm text-[#25a35f] font-semibold hover:underline">
               Ver todos
             </button>
           </div>
         ) : (
           <div id="comercios-section" className="space-y-5">
-            {/* Seccion Nuevos */}
             {nuevos.length > 0 && !isFiltering && filters.orden !== 'nuevo' && (
               <section>
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   <h2 className="text-sm font-bold text-amber-600 uppercase tracking-wider">Nuevos este mes</h2>
                   <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
@@ -154,7 +172,6 @@ export default function HomePage() {
               </section>
             )}
 
-            {/* Todos */}
             <section>
               <div className="flex items-center justify-between mb-3">
                 {!isFiltering
