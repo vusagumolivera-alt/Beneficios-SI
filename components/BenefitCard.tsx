@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { MapPin, CalendarBlank, CreditCard, NavigationArrow, InstagramLogo, Globe, CaretDown, CaretUp } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
 
 const LOCALIDAD_COLORS: Record<string, string> = {
@@ -72,17 +73,24 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
         <p className="text-[#1d5c3a] font-semibold text-xs mt-1 line-clamp-2">{comercio.descripcion_descuento}</p>
 
         <div className="flex items-center justify-center gap-1 mt-1">
-          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${locColor}`}>
-            📍 {comercio.localidad}
+          <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${locColor}`}>
+            <MapPin size={10} weight="fill" />
+            {comercio.localidad}
           </span>
         </div>
 
         <div className="mt-1 space-y-0.5">
           {comercio.dias_validos && (
-            <p className="text-[10px] text-slate-400">📅 {comercio.dias_validos}</p>
+            <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+              <CalendarBlank size={10} weight="regular" />
+              {comercio.dias_validos}
+            </p>
           )}
           {comercio.medios_pago && (
-            <p className="text-[10px] text-slate-400 line-clamp-1">💳 {comercio.medios_pago}</p>
+            <p className="text-[10px] text-slate-400 line-clamp-1 flex items-center justify-center gap-1">
+              <CreditCard size={10} weight="regular" />
+              {comercio.medios_pago}
+            </p>
           )}
         </div>
 
@@ -90,9 +98,12 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
           <div className="mt-1">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-[10px] text-[#25a35f] font-medium hover:underline"
+              className="text-[10px] text-[#25a35f] font-medium hover:underline inline-flex items-center gap-0.5"
             >
-              {expanded ? '▲ Ocultar condiciones' : '▼ Ver condiciones'}
+              {expanded
+                ? <><CaretUp size={10} weight="bold" /> Ocultar condiciones</>
+                : <><CaretDown size={10} weight="bold" /> Ver condiciones</>
+              }
             </button>
             {expanded && (
               <p className="mt-1 text-[10px] text-slate-500 bg-slate-50 rounded-lg p-2 leading-relaxed text-left border border-slate-100">
@@ -109,9 +120,10 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
           href={mapsUrl(comercio.direccion, comercio.localidad)}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-500 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
         >
-          <span>🗺️</span> Maps
+          <NavigationArrow size={13} weight="regular" />
+          Maps
         </a>
         {comercio.instagram_url && (
           <>
@@ -120,14 +132,10 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
               href={comercio.instagram_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium transition-all group"
-              style={{background: 'transparent'}}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-500 hover:bg-pink-50 hover:text-pink-600 transition-colors"
             >
-              <span className="text-slate-400 group-hover:hidden">📸</span>
-              <span className="hidden group-hover:inline text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 font-bold">📸</span>
-              <span className="text-slate-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:via-pink-500 group-hover:to-orange-400 group-hover:font-bold">
-                Instagram
-              </span>
+              <InstagramLogo size={13} weight="regular" />
+              Instagram
             </a>
           </>
         )}
@@ -138,9 +146,10 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
               href={comercio.website_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-medium text-slate-600 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-500 hover:bg-[#f0f9f4] hover:text-[#1d5c3a] transition-colors"
             >
-              <span>🌐</span> Web
+              <Globe size={13} weight="regular" />
+              Web
             </a>
           </>
         )}

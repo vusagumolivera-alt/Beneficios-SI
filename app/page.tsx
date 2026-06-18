@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import { SpinnerGap, MagnifyingGlass } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
@@ -13,14 +14,14 @@ function norm(s: string) {
 
 // value: palabras clave separadas por | (sin tildes)
 const RUBRO_CHIPS = [
-  { label: 'Todos',       value: '',                                        icon: '🏪' },
-  { label: 'Comida',      value: 'gastronomia|comidas|panaderia|pasta|fruteria', icon: '🍽️' },
-  { label: 'Belleza',     value: 'peluqueria|belleza',                      icon: '💅' },
-  { label: 'Moda',        value: 'indumentaria|textil|zapateria|moda',      icon: '👗' },
-  { label: 'Helados',     value: 'helad',                                   icon: '🍦' },
-  { label: 'Electro',     value: 'audio|iluminacion|electr',                icon: '📺' },
-  { label: 'Niños',       value: 'jugueteria',                              icon: '🧸' },
-  { label: 'Almacén',     value: 'almacen|dietetic|kiosco',                 icon: '🛒' },
+  { label: 'Todos',    value: '' },
+  { label: 'Comida',   value: 'gastronomia|comidas|panaderia|pasta|fruteria' },
+  { label: 'Belleza',  value: 'peluqueria|belleza' },
+  { label: 'Moda',     value: 'indumentaria|textil|zapateria|moda' },
+  { label: 'Helados',  value: 'helad' },
+  { label: 'Electro',  value: 'audio|iluminacion|electr' },
+  { label: 'Ninos',    value: 'jugueteria' },
+  { label: 'Almacen',  value: 'almacen|dietetic|kiosco' },
 ]
 
 export default function HomePage() {
@@ -73,8 +74,11 @@ export default function HomePage() {
 
       {/* Header sticky */}
       <header className="bg-[#1d5c3a] text-white sticky top-0 z-30 shadow-lg">
-        <div className="max-w-6xl mx-auto px-4 py-3.5 flex items-center gap-3">
-          <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center text-lg shrink-0">🏛️</div>
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+          {/* Logo institucional — texto, sin emoji */}
+          <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center shrink-0">
+            <span className="text-white font-black text-xs leading-none text-center" style={{fontSize: '9px', letterSpacing: '0.04em', lineHeight: 1.1}}>MSI</span>
+          </div>
           <div className="min-w-0 flex-1">
             <p className="text-green-300 text-[10px] font-semibold uppercase tracking-widest leading-none mb-0.5">Municipalidad de San Isidro</p>
             <h1 className="text-base font-bold leading-none">Beneficios para empleados</h1>
@@ -87,20 +91,20 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Chips de rubro */}
+        {/* Chips de rubro — estilo tab limpio sin emojis */}
         <div className="border-t border-white/10 overflow-x-auto" style={{scrollbarWidth:'none'}}>
-          <div className="flex gap-2 px-4 py-2 w-max">
+          <div className="flex gap-1 px-4 py-2 w-max">
             {RUBRO_CHIPS.map(chip => (
               <button
                 key={chip.value}
                 onClick={() => setRubroChip(chip.value)}
-                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-150 ${
                   rubroChip === chip.value
-                    ? 'bg-white text-[#1d5c3a] shadow-sm scale-105'
-                    : 'bg-white/15 text-white hover:bg-white/25'
+                    ? 'bg-white text-[#1d5c3a] shadow-sm'
+                    : 'text-white/65 hover:text-white hover:bg-white/15'
                 }`}
               >
-                <span>{chip.icon}</span>{chip.label}
+                {chip.label}
               </button>
             ))}
           </div>
@@ -118,14 +122,14 @@ export default function HomePage() {
 
         {loading ? (
           <div className="text-center py-20 text-slate-400">
-            <div className="text-5xl mb-3">⏳</div>
+            <SpinnerGap size={40} className="mx-auto mb-3 animate-spin text-[#25a35f]" weight="regular" />
             <p className="font-medium">Cargando beneficios...</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-slate-400">
-            <div className="text-5xl mb-3">🔍</div>
+            <MagnifyingGlass size={40} className="mx-auto mb-3 text-slate-300" weight="regular" />
             <p className="font-medium text-slate-600">No se encontraron comercios</p>
-            <p className="text-sm mt-1">Probá con otros filtros</p>
+            <p className="text-sm mt-1">Proba con otros filtros</p>
             <button onClick={() => { setFilters({ search:'', rubro:'', localidad:'', descuento:'', orden:'descuento' }); setRubroChip('') }}
               className="mt-3 text-sm text-[#25a35f] font-semibold hover:underline">
               Ver todos
@@ -133,11 +137,11 @@ export default function HomePage() {
           </div>
         ) : (
           <div id="comercios-section" className="space-y-5">
-            {/* Sección Nuevos — solo cuando no se filtra */}
+            {/* Seccion Nuevos */}
             {nuevos.length > 0 && !isFiltering && filters.orden !== 'nuevo' && (
               <section>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-amber-500">✨</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                   <h2 className="text-sm font-bold text-amber-600 uppercase tracking-wider">Nuevos este mes</h2>
                   <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
@@ -168,7 +172,7 @@ export default function HomePage() {
       </main>
 
       <footer className="mt-8 py-5 text-center text-xs text-slate-400 border-t border-[#d9ede2]">
-        Programa de beneficios — Dirección de Capital Humano · Municipalidad de San Isidro
+        Programa de beneficios — Direccion de Capital Humano · Municipalidad de San Isidro
       </footer>
     </div>
   )

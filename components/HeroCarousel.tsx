@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { Star, CurrencyDollar, Storefront, IdentificationCard } from '@phosphor-icons/react'
 
 const SLIDES = [
   {
-    icon: '✨',
+    Icon: Star,
     label: 'Programa de Beneficios — San Isidro',
     title: 'Descuentos exclusivos para vos',
     subtitle: 'Aprovechá los beneficios que la Municipalidad de San Isidro tiene para su personal.',
@@ -13,7 +14,7 @@ const SLIDES = [
     accentColor: 'text-green-300',
   },
   {
-    icon: '💰',
+    Icon: CurrencyDollar,
     label: 'Ahorrá en cada compra',
     title: 'Hasta 50% OFF en comercios locales',
     subtitle: 'Gastronomía, belleza, indumentaria, heladerías, deportes y mucho más cerca tuyo.',
@@ -22,7 +23,7 @@ const SLIDES = [
     accentColor: 'text-green-200',
   },
   {
-    icon: '🏪',
+    Icon: Storefront,
     label: 'Red en crecimiento',
     title: 'Más de 30 locales adheridos',
     subtitle: 'En San Isidro, Martínez, Boulogne, Beccar y Acassuso. Y seguimos sumando.',
@@ -31,7 +32,7 @@ const SLIDES = [
     accentColor: 'text-emerald-300',
   },
   {
-    icon: '🪪',
+    Icon: IdentificationCard,
     label: '¿Cómo usar el beneficio?',
     title: 'Solo presentá tu credencial',
     subtitle: 'Acreditá ser empleado/a del Municipio de San Isidro y accedé al descuento de inmediato.',
@@ -75,6 +76,7 @@ export default function HeroCarousel({ onCtaClick }: HeroCarouselProps) {
   }, [paused])
 
   const slide = SLIDES[current]
+  const { Icon } = slide
 
   return (
     <div
@@ -99,12 +101,12 @@ export default function HeroCarousel({ onCtaClick }: HeroCarouselProps) {
       {/* Slide content */}
       <div
         key={current}
-        className="animate-fadeSlide relative z-10 px-5 pt-5 pb-4"
+        className="animate-fadeSlide relative z-10 px-5 pt-5 pb-4 min-h-[148px]"
       >
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-2xl shrink-0 mt-0.5">
-            {slide.icon}
+          <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center shrink-0 mt-0.5">
+            <Icon size={24} weight="regular" className="text-white" />
           </div>
 
           {/* Text */}
