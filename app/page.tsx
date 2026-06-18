@@ -75,12 +75,14 @@ export default function HomePage() {
       {/* Header sticky */}
       <header className="bg-[#1d5c3a] text-white sticky top-0 z-30 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
-          {/* Logo institucional — texto, sin emoji */}
-          <div className="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center shrink-0">
-            <span className="text-white font-black text-xs leading-none text-center" style={{fontSize: '9px', letterSpacing: '0.04em', lineHeight: 1.1}}>MSI</span>
-          </div>
+          {/* Logo Mi San Isidro */}
+          <img
+            src="/logo-msi.png"
+            alt="Mi San Isidro"
+            className="h-9 w-auto shrink-0"
+            style={{ filter: 'brightness(0) invert(1)' }}
+          />
           <div className="min-w-0 flex-1">
-            <p className="text-green-300 text-[10px] font-semibold uppercase tracking-widest leading-none mb-0.5">Municipalidad de San Isidro</p>
             <h1 className="text-base font-bold leading-none">Beneficios para empleados</h1>
           </div>
           {!loading && (
