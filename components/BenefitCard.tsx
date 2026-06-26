@@ -39,9 +39,9 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
 
       {/* Header verde */}
       <div className="bg-gradient-to-br from-[#1d5c3a] to-[#236b43] h-16 relative shrink-0">
-        <div className="absolute top-2 right-3 bg-white/95 backdrop-blur rounded-xl px-2.5 py-1 shadow-sm">
-          <span className="text-[#1d5c3a] font-black text-base leading-none">{comercio.descuento}%</span>
-          <span className="text-[#25a35f] text-[10px] font-bold ml-0.5">OFF</span>
+        <div className="absolute top-2 right-3 bg-white/95 backdrop-blur rounded-xl px-2 py-0.5 shadow-sm">
+          <span className="text-[#1d5c3a] font-black text-sm leading-none">{comercio.descuento}%</span>
+          <span className="text-[#25a35f] text-[9px] font-bold ml-0.5">OFF</span>
         </div>
         {comercio.nuevo && (
           <div className="absolute top-2 left-3 bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">

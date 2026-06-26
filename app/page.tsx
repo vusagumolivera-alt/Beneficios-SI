@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower } from '@phosphor-icons/react'
+import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower, WhatsappLogo } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
@@ -196,6 +196,18 @@ export default function HomePage() {
       <footer className="mt-8 py-5 text-center text-xs text-slate-400 border-t border-[#d9ede2]">
         Programa de beneficios — Direccion de Capital Humano · Municipalidad de San Isidro
       </footer>
+
+      {/* Botón flotante WhatsApp */}
+      <a
+        href="https://whatsapp.com/channel/0029VbAh4uIDp2QAfEVLmO3j"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-5 right-4 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 text-sm font-semibold"
+        aria-label="Canal de WhatsApp oficial MSI"
+      >
+        <WhatsappLogo size={20} weight="fill" />
+        <span>Canal MSI</span>
+      </a>
     </div>
   )
 }
