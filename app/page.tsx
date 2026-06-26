@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { SpinnerGap, MagnifyingGlass } from '@phosphor-icons/react'
+import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
@@ -12,17 +12,19 @@ function norm(s: string) {
 }
 
 const RUBRO_CHIPS = [
-  { label: 'Todos',    value: '' },
-  { label: 'Comida',   value: 'gastronomia|comidas|panaderia|pasta|fruteria' },
-  { label: 'Belleza',  value: 'peluqueria|belleza' },
-  { label: 'Moda',     value: 'indumentaria|textil|zapateria|moda' },
-  { label: 'Helados',  value: 'helad' },
-  { label: 'Electro',  value: 'audio|iluminacion|electr' },
-  { label: 'Niños',    value: 'jugueteria' },
-  { label: 'Almacén',  value: 'almacen|dietetic|kiosco' },
+  { label: 'Todos',    value: '',                                          icon: SquaresFour },
+  { label: 'Comida',   value: 'gastronomia|comidas|panaderia|pasta|fruteria', icon: ForkKnife },
+  { label: 'Belleza',  value: 'peluqueria|belleza',                        icon: Scissors },
+  { label: 'Moda',     value: 'indumentaria|textil|zapateria|moda',        icon: TShirt },
+  { label: 'Óptica',   value: 'optica|ortopedia|fotografia',               icon: Eye },
+  { label: 'Salud',    value: 'farmacia|salud',                            icon: FirstAidKit },
+  { label: 'Helados',  value: 'helad',                                     icon: Snowflake },
+  { label: 'Niños',    value: 'jugueteria',                                icon: Baby },
+  { label: 'Almacén',  value: 'almacen|dietetic|kiosco',                   icon: ShoppingBag },
+  { label: 'Flores',   value: 'floreria',                                  icon: Flower },
 ]
 
-const EMPTY_FILTERS: FilterState = { search: '', rubro: '', localidad: '', descuento: '', orden: 'descuento' }
+const EMPTY_FILTERS: FilterState = { search: '', localidad: '', descuento: '', orden: 'descuento' }
 
 export default function HomePage() {
   const [comercios, setComercios] = useState<Comercio[]>([])
@@ -53,16 +55,15 @@ export default function HomePage() {
     )
   }, [])
 
-  const rubros = useMemo(() =>
-    [...new Set(comercios.map(c => c.rubro))].sort(), [comercios])
   const localidades = useMemo(() =>
-    [...new Set(comercios.map(c => c.localidad))].sort(), [comercios])
+    [...new Set(comercios.map(c => c.localidad.trim()))].sort(), [comercios])
 
   const filtered = useMemo(() => {
     let result = comercios.filter(c => {
-      if (filters.search && !c.nombre.toLowerCase().includes(filters.search.toLowerCase()) &&
-          !c.rubro.toLowerCase().includes(filters.search.toLowerCase())) return false
-      if (filters.rubro && c.rubro !== filters.rubro) return false
+      if (filters.search) {
+        const q = filters.search.toLowerCase()
+        if (!c.nombre.toLowerCase().includes(q) && !c.rubro.toLowerCase().includes(q)) return false
+      }
       if (activeChips.length > 0) {
         const rubroNorm = norm(c.rubro)
         const matchesAny = activeChips.some(chipValue => {
@@ -71,7 +72,7 @@ export default function HomePage() {
         })
         if (!matchesAny) return false
       }
-      if (filters.localidad && c.localidad !== filters.localidad) return false
+      if (filters.localidad && c.localidad.trim() !== filters.localidad) return false
       if (filters.descuento && c.descuento < parseInt(filters.descuento)) return false
       return true
     })
@@ -84,7 +85,7 @@ export default function HomePage() {
   }, [comercios, filters, activeChips])
 
   const nuevos = filtered.filter(c => c.nuevo)
-  const isFiltering = !!(filters.search || filters.rubro || filters.localidad || filters.descuento || activeChips.length > 0)
+  const isFiltering = !!(filters.search || filters.localidad || filters.descuento || activeChips.length > 0)
 
   return (
     <div className="min-h-screen bg-[#f4faf7]">
@@ -117,16 +118,18 @@ export default function HomePage() {
               const isActive = chip.value === ''
                 ? activeChips.length === 0
                 : activeChips.includes(chip.value)
+              const Icon = chip.icon
               return (
                 <button
                   key={chip.value}
                   onClick={() => toggleChip(chip.value)}
-                  className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-150 ${
+                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold tracking-wide transition-all duration-150 ${
                     isActive
                       ? 'bg-white text-[#1d5c3a] shadow-sm'
-                      : 'text-white/65 hover:text-white hover:bg-white/15'
+                      : 'text-white/70 hover:text-white hover:bg-white/15'
                   }`}
                 >
+                  <Icon size={12} weight={isActive ? 'fill' : 'regular'} />
                   {chip.label}
                 </button>
               )
@@ -141,7 +144,7 @@ export default function HomePage() {
           <HeroCarousel onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })} />
         )}
 
-        <Filters filters={filters} onChange={setFilters} rubros={rubros} localidades={localidades} />
+        <Filters filters={filters} onChange={setFilters} localidades={localidades} />
 
         {loading ? (
           <div className="text-center py-20 text-slate-400">
