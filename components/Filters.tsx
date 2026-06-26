@@ -17,10 +17,12 @@ type Props = {
 
 const DESCUENTO_OPTIONS = [
   { label: 'Cualquier descuento', value: '' },
-  { label: '+10% OFF', value: '10' },
-  { label: '+15% OFF', value: '15' },
-  { label: '+20% OFF', value: '20' },
-  { label: '+30% OFF', value: '30' },
+  { label: '10% OFF', value: '10' },
+  { label: '15% OFF', value: '15' },
+  { label: '20% OFF', value: '20' },
+  { label: '30% OFF', value: '30' },
+  { label: '40% OFF', value: '40' },
+  { label: '50% OFF', value: '50' },
 ]
 
 const ORDEN_OPTIONS = [

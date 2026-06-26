@@ -73,7 +73,7 @@ export default function HomePage() {
         if (!matchesAny) return false
       }
       if (filters.localidad && c.localidad.trim() !== filters.localidad) return false
-      if (filters.descuento && c.descuento < parseInt(filters.descuento)) return false
+      if (filters.descuento && c.descuento !== parseInt(filters.descuento)) return false
       return true
     })
 
