@@ -57,7 +57,7 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
             <img
               src={comercio.imagen_url}
               alt={comercio.nombre}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain p-1"
               onError={() => setImgError(true)}
             />
           ) : (
