@@ -68,27 +68,27 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
 
       {/* Info */}
       <div className="px-4 pt-2 pb-3 flex flex-col gap-1 flex-1 text-center">
-        <h3 className="font-bold text-[#1d2d24] text-sm leading-tight line-clamp-2">{comercio.nombre}</h3>
-        <p className="text-xs text-slate-400 line-clamp-1">{comercio.rubro}</p>
-        <p className="text-[#1d5c3a] font-semibold text-xs mt-1 line-clamp-2">{comercio.descripcion_descuento}</p>
+        <h3 className="font-bold text-[#1d2d24] text-[15px] leading-tight line-clamp-2">{comercio.nombre}</h3>
+        <p className="text-[13px] text-slate-400 line-clamp-1">{comercio.rubro}</p>
+        <p className="text-[#1d5c3a] font-semibold text-[13px] mt-1 line-clamp-2">{comercio.descripcion_descuento}</p>
 
         <div className="flex items-center justify-center gap-1 mt-1">
-          <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${locColor}`}>
-            <MapPin size={10} weight="fill" />
+          <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${locColor}`}>
+            <MapPin size={11} weight="fill" />
             {comercio.localidad}
           </span>
         </div>
 
         <div className="mt-1 space-y-0.5">
           {comercio.dias_validos && (
-            <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
-              <CalendarBlank size={10} weight="regular" />
+            <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
+              <CalendarBlank size={11} weight="regular" />
               {comercio.dias_validos}
             </p>
           )}
           {comercio.medios_pago && (
-            <p className="text-[10px] text-slate-400 line-clamp-1 flex items-center justify-center gap-1">
-              <CreditCard size={10} weight="regular" />
+            <p className="text-[11px] text-slate-400 line-clamp-1 flex items-center justify-center gap-1">
+              <CreditCard size={11} weight="regular" />
               {comercio.medios_pago}
             </p>
           )}
