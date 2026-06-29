@@ -119,7 +119,7 @@ export default function Filters({ filters, onChange, localidades }: Props) {
 
         <FilterPill
           icon={Percent}
-          placeholder="% OFF"
+          placeholder="Descuento"
           activeLabel={descuentoLabel}
           isActive={!!filters.descuento}
           value={filters.descuento}
