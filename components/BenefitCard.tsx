@@ -82,13 +82,13 @@ export default function BenefitCard({ comercio }: { comercio: Comercio }) {
         <div className="mt-1 space-y-0.5">
           {comercio.dias_validos && (
             <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-              <CalendarBlank size={11} weight="regular" />
+              <CalendarBlank size={11} weight="regular" className="shrink-0" />
               {comercio.dias_validos}
             </p>
           )}
           {comercio.medios_pago && (
             <p className="text-[11px] text-slate-400 line-clamp-1 flex items-center justify-center gap-1">
-              <CreditCard size={11} weight="regular" />
+              <CreditCard size={11} weight="regular" className="shrink-0" />
               {comercio.medios_pago}
             </p>
           )}
