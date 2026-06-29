@@ -31,7 +31,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
   const [activeChips, setActiveChips] = useState<string[]>([])
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(true)
 
   useEffect(() => {
     fetch('/api/comercios')
