@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower, WhatsappLogo } from '@phosphor-icons/react'
+import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower, WhatsappLogo, List, X, ArrowRight, Storefront } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
@@ -31,6 +31,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
   const [activeChips, setActiveChips] = useState<string[]>([])
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     fetch('/api/comercios')
@@ -109,7 +110,49 @@ export default function HomePage() {
               <p className="text-green-300 text-[9px] font-semibold uppercase tracking-wide">comercios</p>
             </div>
           )}
+
+          {/* Desktop: botón adherirse */}
+          <a
+            href="https://tesi.sanisidro.gob.ar/tramites/nuevo/fortalecimiento_comercio_local"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors whitespace-nowrap shrink-0"
+          >
+            <Storefront size={14} weight="regular" />
+            Sumate como comercio
+          </a>
+
+          {/* Mobile: hamburguesa */}
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            className="sm:hidden shrink-0 p-1.5 rounded-lg hover:bg-white/15 transition-colors"
+            aria-label="Menú"
+          >
+            {menuOpen ? <X size={22} weight="bold" /> : <List size={22} weight="regular" />}
+          </button>
         </div>
+
+        {/* Menú mobile drawer */}
+        {menuOpen && (
+          <div className="sm:hidden border-t border-white/10 bg-[#1a5234] px-4 py-3">
+            <a
+              href="https://tesi.sanisidro.gob.ar/tramites/nuevo/fortalecimiento_comercio_local"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 bg-white/10 hover:bg-white/20 rounded-xl px-4 py-3 transition-colors"
+            >
+              <div className="w-9 h-9 bg-white/15 rounded-lg flex items-center justify-center shrink-0">
+                <Storefront size={18} weight="regular" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-semibold text-sm">¿Sos un comercio?</p>
+                <p className="text-white/60 text-xs">Sumate al programa de beneficios</p>
+              </div>
+              <ArrowRight size={16} className="text-white/40 ml-auto shrink-0" />
+            </a>
+          </div>
+        )}
 
         {/* Chips — centrados en desktop, scroll en móvil */}
         <div className="border-t border-white/10 overflow-x-auto" style={{scrollbarWidth:'none'}}>
