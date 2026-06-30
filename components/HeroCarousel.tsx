@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Star, CurrencyDollar, Storefront, IdentificationCard } from '@phosphor-icons/react'
+import { Star, CurrencyDollar, Storefront } from '@phosphor-icons/react'
 
 const SLIDES = [
   {
@@ -30,15 +30,6 @@ const SLIDES = [
     cta: null,
     highlight: '30+',
     accentColor: 'text-emerald-300',
-  },
-  {
-    Icon: IdentificationCard,
-    label: '¿Cómo usar el beneficio?',
-    title: 'Solo presentá tu credencial',
-    subtitle: 'Acreditá ser empleado/a del Municipio de San Isidro y accedé al descuento de inmediato.',
-    cta: null,
-    highlight: null,
-    accentColor: 'text-teal-200',
   },
 ]
 
