@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { MagnifyingGlass, MapPin, Percent, SortAscending, CaretDown, X, Check } from '@phosphor-icons/react'
 
 export type FilterState = {
@@ -43,22 +44,34 @@ type PillProps = {
 
 function FilterPill({ icon: Icon, placeholder, activeLabel, isActive, value, options, onChange }: PillProps) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [pos, setPos] = useState({ top: 0, left: 0 })
+
+  const handleToggle = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      setPos({ top: rect.bottom + window.scrollY + 6, left: rect.left + window.scrollX })
+    }
+    setOpen(o => !o)
+  }
 
   useEffect(() => {
     if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
+    const handler = () => setOpen(false)
     document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    document.addEventListener('touchstart', handler)
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('touchstart', handler)
+    }
   }, [open])
 
   return (
-    <div ref={ref} className="relative shrink-0">
+    <>
       <button
-        onClick={() => setOpen(o => !o)}
-        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap ${
+        ref={btnRef}
+        onClick={handleToggle}
+        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
           isActive
             ? 'bg-[#1d5c3a] text-white border-[#1d5c3a] shadow-sm'
             : 'bg-white text-slate-600 border-[#d9ede2] hover:border-[#1d5c3a]/40 hover:text-[#1d5c3a]'
@@ -72,8 +85,13 @@ function FilterPill({ icon: Icon, placeholder, activeLabel, isActive, value, opt
         />
       </button>
 
-      {open && (
-        <div className="absolute top-full mt-1.5 left-0 z-50 bg-white border border-[#d9ede2] rounded-xl shadow-lg py-1 min-w-[170px]">
+      {open && createPortal(
+        <div
+          style={{ position: 'absolute', top: pos.top, left: pos.left, zIndex: 9999 }}
+          className="bg-white border border-[#d9ede2] rounded-xl shadow-lg py-1 min-w-[170px]"
+          onMouseDown={e => e.stopPropagation()}
+          onTouchStart={e => e.stopPropagation()}
+        >
           {options.map(o => (
             <button
               key={o.value}
@@ -88,9 +106,10 @@ function FilterPill({ icon: Icon, placeholder, activeLabel, isActive, value, opt
               {value === o.value && <Check size={11} weight="bold" className="text-[#1d5c3a] shrink-0" />}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   )
 }
 
@@ -106,7 +125,6 @@ export default function Filters({ filters, onChange, localidades }: Props) {
 
   return (
     <div className="space-y-2.5">
-      {/* Buscador */}
       <div className="relative">
         <MagnifyingGlass
           className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
@@ -132,7 +150,6 @@ export default function Filters({ filters, onChange, localidades }: Props) {
         )}
       </div>
 
-      {/* Pills de filtro */}
       <div className="flex items-center gap-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
         <FilterPill
           icon={MapPin}
