@@ -16,8 +16,8 @@ const SLIDES = [
   {
     Icon: CurrencyDollar,
     label: 'Ahorrá en cada compra',
-    title: 'Hasta 50% OFF en comercios locales',
-    subtitle: 'Gastronomía, belleza, indumentaria, heladerías, deportes y mucho más cerca tuyo.',
+    title: 'Descuentos de 40% y 50% en comercios locales',
+    subtitle: 'Los mejores porcentajes en gastronomía, belleza, indumentaria y mucho más.',
     cta: 'Ver los mejores descuentos →',
     ctaKey: 'highDiscount',
     highlight: '50%',
