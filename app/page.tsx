@@ -40,6 +40,12 @@ export default function HomePage() {
       .catch(() => setLoading(false))
   }, [])
 
+  const handleHighDiscount = useCallback(() => {
+    setFilters(f => ({ ...f, descuento: '35+' }))
+    setActiveChips([])
+    setTimeout(() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }, [])
+
   const resetAll = useCallback(() => {
     setFilters(EMPTY_FILTERS)
     setActiveChips([])
@@ -74,7 +80,10 @@ export default function HomePage() {
         if (!matchesAny) return false
       }
       if (filters.localidad && c.localidad.trim() !== filters.localidad) return false
-      if (filters.descuento && c.descuento !== parseInt(filters.descuento)) return false
+      if (filters.descuento) {
+        if (filters.descuento === '35+') { if (c.descuento < 35) return false }
+        else { if (c.descuento !== parseInt(filters.descuento)) return false }
+      }
       return true
     })
 
@@ -184,7 +193,10 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
         {!isFiltering && (
-          <HeroCarousel onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })} />
+          <HeroCarousel
+            onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })}
+            onHighDiscountClick={handleHighDiscount}
+          />
         )}
 
         <Filters filters={filters} onChange={setFilters} localidades={localidades} />

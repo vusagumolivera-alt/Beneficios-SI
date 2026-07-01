@@ -21,6 +21,7 @@ const DESCUENTO_OPTIONS = [
   { label: '15% OFF', value: '15' },
   { label: '20% OFF', value: '20' },
   { label: '30% OFF', value: '30' },
+  { label: '40% y 50% OFF', value: '35+' },
   { label: '40% OFF', value: '40' },
   { label: '50% OFF', value: '50' },
 ]

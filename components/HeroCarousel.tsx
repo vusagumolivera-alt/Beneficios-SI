@@ -18,7 +18,8 @@ const SLIDES = [
     label: 'Ahorrá en cada compra',
     title: 'Hasta 50% OFF en comercios locales',
     subtitle: 'Gastronomía, belleza, indumentaria, heladerías, deportes y mucho más cerca tuyo.',
-    cta: null,
+    cta: 'Ver los mejores descuentos →',
+    ctaKey: 'highDiscount',
     highlight: '50%',
     accentColor: 'text-green-200',
   },
@@ -35,9 +36,10 @@ const SLIDES = [
 
 interface HeroCarouselProps {
   onCtaClick?: () => void
+  onHighDiscountClick?: () => void
 }
 
-export default function HeroCarousel({ onCtaClick }: HeroCarouselProps) {
+export default function HeroCarousel({ onCtaClick, onHighDiscountClick }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
   const [animating, setAnimating] = useState(false)
@@ -111,12 +113,12 @@ export default function HeroCarousel({ onCtaClick }: HeroCarouselProps) {
             <p className="text-green-100/85 text-xs leading-relaxed">
               {slide.subtitle}
             </p>
-            {slide.cta && onCtaClick && (
+            {slide.cta && (
               <button
-                onClick={onCtaClick}
+                onClick={'ctaKey' in slide && slide.ctaKey === 'highDiscount' ? onHighDiscountClick : onCtaClick}
                 className="mt-3 bg-white/20 hover:bg-white/30 active:bg-white/35 text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-full transition-colors"
               >
-                {slide.cta} →
+                {slide.cta}
               </button>
             )}
           </div>
