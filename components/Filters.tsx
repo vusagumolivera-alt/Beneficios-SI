@@ -1,6 +1,7 @@
 'use client'
 
-import { MagnifyingGlass, MapPin, Percent, SortAscending, CaretDown, X } from '@phosphor-icons/react'
+import { useRef, useState, useEffect } from 'react'
+import { MagnifyingGlass, MapPin, Percent, SortAscending, CaretDown, X, Check } from '@phosphor-icons/react'
 
 export type FilterState = {
   search: string
@@ -41,27 +42,54 @@ type PillProps = {
 }
 
 function FilterPill({ icon: Icon, placeholder, activeLabel, isActive, value, options, onChange }: PillProps) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
   return (
-    <div
-      className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-        isActive
-          ? 'bg-[#1d5c3a] text-white border-[#1d5c3a] shadow-sm'
-          : 'bg-white text-slate-600 border-[#d9ede2] hover:border-[#1d5c3a]/40 hover:text-[#1d5c3a]'
-      }`}
-    >
-      <Icon size={13} weight={isActive ? 'fill' : 'regular'} />
-      <span>{isActive && activeLabel ? activeLabel : placeholder}</span>
-      <CaretDown size={9} className={isActive ? 'text-white/60' : 'text-slate-400'} />
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        className="absolute inset-0 opacity-0 cursor-pointer w-full"
-        aria-label={placeholder}
+    <div ref={ref} className="relative shrink-0">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap ${
+          isActive
+            ? 'bg-[#1d5c3a] text-white border-[#1d5c3a] shadow-sm'
+            : 'bg-white text-slate-600 border-[#d9ede2] hover:border-[#1d5c3a]/40 hover:text-[#1d5c3a]'
+        }`}
       >
-        {options.map(o => (
-          <option key={o.value} value={o.value}>{o.label}</option>
-        ))}
-      </select>
+        <Icon size={13} weight={isActive ? 'fill' : 'regular'} />
+        <span>{isActive && activeLabel ? activeLabel : placeholder}</span>
+        <CaretDown
+          size={9}
+          className={`transition-transform duration-150 ${open ? 'rotate-180' : ''} ${isActive ? 'text-white/60' : 'text-slate-400'}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 z-50 bg-white border border-[#d9ede2] rounded-xl shadow-lg py-1 min-w-[170px]">
+          {options.map(o => (
+            <button
+              key={o.value}
+              onClick={() => { onChange(o.value); setOpen(false) }}
+              className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between gap-2 transition-colors ${
+                value === o.value
+                  ? 'text-[#1d5c3a] font-semibold bg-[#f0f9f4]'
+                  : 'text-slate-600 font-medium hover:bg-slate-50'
+              }`}
+            >
+              {o.label}
+              {value === o.value && <Check size={11} weight="bold" className="text-[#1d5c3a] shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
