@@ -221,7 +221,10 @@ export default function HomePage() {
             <section>
               <div className="flex items-center justify-between mb-3">
                 {!isFiltering
-                  ? <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Todos los comercios</h2>
+                  ? <div className="flex items-center gap-2">
+                      <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Todos los comercios</h2>
+                      <span className="bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-0.5 rounded-full">{filtered.filter(c => !c.nuevo).length}</span>
+                    </div>
                   : <p className="text-sm text-slate-500"><span className="font-bold text-[#1d5c3a]">{filtered.length}</span> resultado{filtered.length !== 1 ? 's' : ''}</p>
                 }
               </div>
