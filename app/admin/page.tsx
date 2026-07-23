@@ -84,12 +84,16 @@ export default function AdminPage() {
             <p className="text-green-300 text-xs">Beneficios para empleados — San Isidro</p>
           </div>
           <div className="flex items-center gap-3">
+            <a href="https://vercel.com/vusagumolivera-alts-projects/beneficios-si/analytics" target="_blank" rel="noopener noreferrer"
+              className="text-xs text-white bg-white/15 hover:bg-white/25 border border-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 font-semibold">
+              📊 Ver métricas
+            </a>
             <a href="/" target="_blank"
-              className="text-xs text-blue-200 hover:text-white border border-white/20 px-3 py-1.5 rounded-lg transition-colors">
-              Ver app pública ↗
+              className="text-xs text-green-200 hover:text-white border border-white/20 px-3 py-1.5 rounded-lg transition-colors">
+              Ver app ↗
             </a>
             <button onClick={handleLogout}
-              className="text-xs text-blue-200 hover:text-white">
+              className="text-xs text-green-200 hover:text-white">
               Salir
             </button>
           </div>
