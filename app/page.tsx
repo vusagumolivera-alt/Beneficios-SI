@@ -291,7 +291,7 @@ export default function HomePage() {
       )}
 
       {/* Botón flotante WhatsApp */}
-      <
+      <a
         href="https://whatsapp.com/channel/0029VbAh4uIDp2QAfEVLmO3j"
         target="_blank"
         rel="noopener noreferrer"
