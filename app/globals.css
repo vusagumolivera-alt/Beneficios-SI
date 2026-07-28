@@ -33,7 +33,21 @@ body {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+.animate-fadeSlide { animation: fadeSlide 0.4s ease; }
 
-.animate-fadeSlide {
-  animation: fadeSlide 0.4s ease;
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-cardEnter { animation: cardEnter 0.35s ease both; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-pulse {
+  background: linear-gradient(90deg, #ddeee6 25%, #eef7f2 50%, #ddeee6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
 }

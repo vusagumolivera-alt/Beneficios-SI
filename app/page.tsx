@@ -1,11 +1,28 @@
 'use client'
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { SpinnerGap, MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower, WhatsappLogo, List, X, ArrowRight, Storefront } from '@phosphor-icons/react'
+import { MagnifyingGlass, SquaresFour, ForkKnife, Scissors, TShirt, Eye, Snowflake, Baby, FirstAidKit, ShoppingBag, Flower, WhatsappLogo, List, X, ArrowRight, Storefront, ArrowUp } from '@phosphor-icons/react'
 import BenefitCard from '@/components/BenefitCard'
+import SkeletonCard from '@/components/SkeletonCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
 import type { Comercio } from '@/lib/supabase'
+
+function useCountUp(target: number) {
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!target) return
+    let current = 0
+    const step = Math.max(1, Math.floor(target / 25))
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target)
+      setCount(current)
+      if (current >= target) clearInterval(timer)
+    }, 30)
+    return () => clearInterval(timer)
+  }, [target])
+  return count
+}
 
 function norm(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -32,6 +49,14 @@ export default function HomePage() {
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
   const [activeChips, setActiveChips] = useState<string[]>([])
   const [menuOpen, setMenuOpen] = useState(true)
+  const [showTop, setShowTop] = useState(false)
+  const displayCount = useCountUp(comercios.length)
+
+  useEffect(() => {
+    const handler = () => setShowTop(window.scrollY > 300)
+    window.addEventListener('scroll', handler, { passive: true })
+    return () => window.removeEventListener('scroll', handler)
+  }, [])
 
   useEffect(() => {
     fetch('/api/comercios')
@@ -115,7 +140,7 @@ export default function HomePage() {
           </div>
           {!loading && (
             <div className="shrink-0 bg-white/15 rounded-xl px-3 py-1.5 text-center">
-              <p className="text-white font-black text-lg leading-none">{comercios.length}</p>
+              <p className="text-white font-black text-lg leading-none">{displayCount}</p>
               <p className="text-green-300 text-[9px] font-semibold uppercase tracking-wide">comercios</p>
             </div>
           )}
@@ -202,9 +227,8 @@ export default function HomePage() {
         <Filters filters={filters} onChange={setFilters} localidades={localidades} />
 
         {loading ? (
-          <div className="text-center py-20 text-slate-400">
-            <SpinnerGap size={40} className="mx-auto mb-3 animate-spin text-[#25a35f]" weight="regular" />
-            <p className="font-medium">Cargando beneficios...</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-slate-400">
@@ -224,7 +248,7 @@ export default function HomePage() {
                   <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {nuevos.map(c => <BenefitCard key={c.id} comercio={c} />)}
+                  {nuevos.map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
                 </div>
                 <div className="mt-5 border-t border-[#d9ede2]" />
               </section>
@@ -244,7 +268,7 @@ export default function HomePage() {
                 {(isFiltering || filters.orden === 'nuevo'
                   ? filtered
                   : filtered.filter(c => !c.nuevo)
-                ).map(c => <BenefitCard key={c.id} comercio={c} />)}
+                ).map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
               </div>
             </section>
           </div>
@@ -255,8 +279,19 @@ export default function HomePage() {
         Programa de beneficios — Direccion de Capital Humano · Municipalidad de San Isidro
       </footer>
 
+      {/* Botón volver arriba */}
+      {showTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-20 right-4 z-50 bg-white border border-[#d9ede2] shadow-md hover:shadow-lg text-[#1d5c3a] hover:bg-[#f0f9f4] w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+          aria-label="Volver arriba"
+        >
+          <ArrowUp size={18} weight="bold" />
+        </button>
+      )}
+
       {/* Botón flotante WhatsApp */}
-      <a
+      <
         href="https://whatsapp.com/channel/0029VbAh4uIDp2QAfEVLmO3j"
         target="_blank"
         rel="noopener noreferrer"
