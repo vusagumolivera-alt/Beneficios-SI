@@ -195,6 +195,31 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-5 space-y-5 pb-28">
 
         {/* Favoritos vacío */}
+        {/* Vista mapa */}
+        {activeTab === 'mapa' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border border-[#e2ede8] shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-[#e2ede8]">
+                <h2 className="font-bold text-[#1d2d24] text-sm">Comercios en San Isidro</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Zona del partido — {comercios.length} comercios adheridos</p>
+              </div>
+              <iframe
+                src="https://maps.google.com/maps?q=San+Isidro,+Buenos+Aires,+Argentina&output=embed&hl=es&z=13"
+                className="w-full"
+                style={{ height: '420px', border: 'none' }}
+                loading="lazy"
+                title="Mapa de San Isidro"
+              />
+            </div>
+            <p className="text-center text-xs text-slate-400 px-2">
+              Para ver la dirección exacta de cada comercio, abrí su ficha y tocá "Cómo llegar"
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {comercios.slice(0, 6).map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
+            </div>
+          </div>
+        )}
+
         {activeTab === 'favoritos' && !loading && filtered.length === 0 && (
           <div className="text-center py-20">
             <p className="text-4xl mb-3">🤍</p>
@@ -258,23 +283,25 @@ export default function HomePage() {
         )}
 
         {/* Filters */}
-        <div ref={filtersRef}>
-          <Filters filters={filters} onChange={setFilters} localidades={localidades} />
-        </div>
+        {activeTab !== 'mapa' && (
+          <div ref={filtersRef}>
+            <Filters filters={filters} onChange={setFilters} localidades={localidades} />
+          </div>
+        )}
 
         {/* Cards grid */}
-        {loading ? (
+        {activeTab !== 'mapa' && loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
-        ) : filtered.length === 0 && activeTab !== 'favoritos' ? (
+        ) : activeTab !== 'mapa' && filtered.length === 0 && activeTab !== 'favoritos' ? (
           <div className="text-center py-20 text-slate-400">
             <p className="text-4xl mb-3">🔍</p>
             <p className="font-bold text-slate-600">No se encontraron comercios</p>
             <p className="text-sm mt-1">Probá con otros filtros</p>
             <button onClick={resetAll} className="mt-3 text-sm text-[#25a35f] font-semibold hover:underline">Ver todos</button>
           </div>
-        ) : (
+        ) : activeTab !== 'mapa' ? (
           <div id="comercios-section" className="space-y-5">
             {/* Nuevos */}
             {nuevos.length > 0 && activeTab === 'inicio' && !isFiltering && filters.orden !== 'nuevo' && (
