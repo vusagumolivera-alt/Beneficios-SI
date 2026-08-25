@@ -342,7 +342,7 @@ export default function HomePage() {
               </div>
             </section>
           </div>
-        )}
+        ) : null}
       </main>
 
       <footer className="pb-24 pt-5 text-center text-xs text-slate-400 border-t border-[#d9ede2]">
