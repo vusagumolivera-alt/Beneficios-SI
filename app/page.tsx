@@ -212,11 +212,8 @@ export default function HomePage() {
               />
             </div>
             <p className="text-center text-xs text-slate-400 px-2">
-              Para ver la dirección exacta de cada comercio, abrí su ficha y tocá "Cómo llegar"
+              Para ver la dirección exacta de cada comercio, abrí su ficha desde el inicio y tocá "Cómo llegar"
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {comercios.slice(0, 6).map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
-            </div>
           </div>
         )}
 
