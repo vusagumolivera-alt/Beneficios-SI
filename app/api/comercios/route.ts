@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminSession } from '@/lib/auth'
 
 import DEMO_DATA from '@/lib/demo-data.json'
+import { mergeFijos } from '@/lib/comercios-fijos'
+import type { Comercio } from '@/lib/supabase'
 
 function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -10,7 +12,7 @@ function isSupabaseConfigured() {
 
 export async function GET() {
   if (!isSupabaseConfigured()) {
-    return NextResponse.json(DEMO_DATA)
+    return NextResponse.json(mergeFijos(DEMO_DATA as Comercio[]))
   }
 
   try {
@@ -28,7 +30,7 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json(data)
+    return NextResponse.json(mergeFijos((data || []) as Comercio[]))
   } catch (e) {
     return NextResponse.json({ error: 'Error de conexión' }, { status: 500 })
   }

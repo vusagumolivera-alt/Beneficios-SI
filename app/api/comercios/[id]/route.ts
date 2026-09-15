@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminSession } from '@/lib/auth'
 import DEMO_DATA from '@/lib/demo-data.json'
+import { buscarFijo } from '@/lib/comercios-fijos'
 
 type Ctx = { params: Promise<{ id: string }> }
 
@@ -21,6 +22,9 @@ async function getAdminClient() {
 // Público: ficha de un comercio publicado
 export async function GET(_req: NextRequest, { params }: Ctx) {
   const { id } = await params
+
+  const fijo = buscarFijo(id)
+  if (fijo) return NextResponse.json(fijo)
 
   if (!isSupabaseConfigured()) {
     const found = (DEMO_DATA as { id: string }[]).find(c => c.id === id)

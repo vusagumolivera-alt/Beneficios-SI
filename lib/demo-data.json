@@ -1,23 +1,5 @@
 [
  {
-  "id": "mcdonalds-demo",
-  "nombre": "McDonald's",
-  "descripcion_descuento": "Hasta 30% OFF, 2x1 y café gratis con cupones en la App",
-  "descuento": 30,
-  "rubro": "Gastronomía",
-  "direccion": "Todas las sucursales del país",
-  "localidad": "San Isidro",
-  "dias_validos": "Todos los días",
-  "medios_pago": "Efectivo, tarjetas, Mercado Pago y MODO",
-  "condiciones": "Válido presentando el cupón generado en la App de McDonald's. Imágenes de carácter ilustrativo. No acumulable con otras promociones. Vigencia hasta el 31/12/2026.",
-  "imagen_url": "/cupones/mcdonalds/logo.svg",
-  "instagram_url": "https://www.instagram.com/mcdonalds_ar/",
-  "website_url": "https://www.mcdonalds.com.ar/",
-  "publicado": true,
-  "nuevo": true,
-  "created_at": "2026-09-15T11:29:31.749162"
- },
- {
   "id": "951208ec-c798-4b7c-b313-87d56dc188a4",
   "nombre": "Farmacia Fabris",
   "descripcion_descuento": "10% OFF en medicamentos y productos",
