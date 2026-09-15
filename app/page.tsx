@@ -130,9 +130,9 @@ export default function HomePage() {
   }, [comercios, filters, activeChips, activeTab, favIds])
 
   const lanzamiento = useMemo(() => comercios.find(c => tieneCupones(c.nombre)) || null, [comercios])
-  const nuevos = useMemo(() => filtered.filter(c => c.nuevo && c.id !== lanzamiento?.id), [filtered, lanzamiento])
+  const nuevos = useMemo(() => filtered.filter(c => c.nuevo), [filtered])
   const destacados = useMemo(() =>
-    [...comercios].filter(c => !tieneCupones(c.nombre)).sort((a, b) => b.descuento - a.descuento).slice(0, 10), [comercios])
+    [...comercios].sort((a, b) => (tieneCupones(b.nombre) ? 1 : 0) - (tieneCupones(a.nombre) ? 1 : 0) || b.descuento - a.descuento).slice(0, 10), [comercios])
   const isFiltering = !!(filters.search || filters.localidad || filters.descuento || activeChips.length > 0)
 
   function handleTabChange(tab: Tab) {
