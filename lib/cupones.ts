@@ -46,7 +46,7 @@ export const CUPONES: Record<string, CuponesConfig> = {
     comoUsar: [
       'Escaneá el QR con la cámara del celu (o tocalo para abrirlo).',
       "Se abre la App de McDonald's con el cupón ya cargado.",
-      'Mostrá el cupón generado en la caja, en el AutoMac o en el kiosco de autopedido.',
+      'Mostrá el cupón generado en la caja o en el AutoMac.',
     ],
     cupones: [
       { id: 'cuarto-libra',    categoria: 'McCombo Mediano',       titulo: 'Cuarto de Libra c/Queso',                 beneficio: '30% OFF', qr: `${MC}/cuarto-libra.png`,    emoji: '🍔' },

@@ -70,7 +70,7 @@ function CuponModal({ cupon, cfg, onClose }: { cupon: Cupon; cfg: CuponesConfig;
             Escaneá el QR con la cámara del celu
           </p>
           <p className="text-[12px] text-[#6b7a72] mt-1 leading-relaxed">
-            Se abre la {cfg.appNombre} con el cupón cargado. Mostralo en caja, en el AutoMac o en el autopedido.
+            Se abre la {cfg.appNombre} con el cupón cargado. Mostralo en caja o en el AutoMac.
           </p>
           <a
             href={cupon.link || appLink(cfg)}
