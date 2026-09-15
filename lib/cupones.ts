@@ -11,6 +11,7 @@ export type Cupon = {
   beneficio: string        // "30% OFF", "2x1", "GRATIS"
   nota?: string            // "Exclusivo en locales con McCafé"
   qr: string               // ruta de la imagen del QR
+  link?: string            // URL que codifica el QR (abre la app con el cupón). Opcional hasta tenerla.
   emoji?: string
 }
 
@@ -23,6 +24,7 @@ export type CuponesConfig = {
   comoUsar: string[]
   appNombre: string
   appLinks?: { ios?: string; android?: string }
+  appWeb?: string          // fallback en desktop
   cupones: Cupon[]
 }
 
@@ -40,10 +42,11 @@ export const CUPONES: Record<string, CuponesConfig> = {
       ios: 'https://apps.apple.com/ar/app/mcdonalds-app/id1119426125',
       android: 'https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds',
     },
+    appWeb: 'https://www.mcdonalds.com.ar/',
     comoUsar: [
       'Escaneá el QR con la cámara del celu (o tocalo para abrirlo).',
       "Se abre la App de McDonald's con el cupón ya cargado.",
-      'Mostrá el cupón generado en la caja o usalo en el kiosco de autopedido.',
+      'Mostrá el cupón generado en la caja, en el AutoMac o en el kiosco de autopedido.',
     ],
     cupones: [
       { id: 'cuarto-libra',    categoria: 'McCombo Mediano',       titulo: 'Cuarto de Libra c/Queso',                 beneficio: '30% OFF', qr: `${MC}/cuarto-libra.png`,    emoji: '🍔' },
@@ -78,4 +81,14 @@ export function getCupones(nombre: string): CuponesConfig | null {
 
 export function tieneCupones(nombre: string): boolean {
   return getCupones(nombre) !== null
+}
+
+/** Link para abrir la app según el dispositivo (App Store / Google Play / web). */
+export function appLink(cfg: CuponesConfig): string {
+  if (typeof navigator !== 'undefined') {
+    const ua = navigator.userAgent
+    if (/iPhone|iPad|iPod/i.test(ua) && cfg.appLinks?.ios) return cfg.appLinks.ios
+    if (/Android/i.test(ua) && cfg.appLinks?.android) return cfg.appLinks.android
+  }
+  return cfg.appWeb || cfg.appLinks?.android || cfg.appLinks?.ios || '#'
 }

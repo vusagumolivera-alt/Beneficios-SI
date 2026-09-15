@@ -65,19 +65,21 @@ export default function BenefitCard({ comercio, index = 0 }: { comercio: Comerci
       className="group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all duration-200 animate-cardEnter overflow-hidden"
       style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
     >
-      {/* Logo tile */}
-      <div className="relative m-2 mb-0 h-[116px] rounded-2xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] overflow-hidden">
-        {comercio.imagen_url && !imgError ? (
-          <img
-            src={comercio.imagen_url}
-            alt={comercio.nombre}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-contain p-5 group-hover:scale-[1.03] transition-transform duration-300"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <Initials nombre={comercio.nombre} />
-        )}
+      {/* Logo tile: avatar circular uniforme para que todos los logos pesen igual */}
+      <div className="relative m-2 mb-0 h-[116px] rounded-2xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] flex items-center justify-center">
+        <div className="w-[76px] h-[76px] rounded-full bg-white ring-1 ring-black/[0.06] shadow-[0_2px_8px_rgba(20,32,26,0.06)] overflow-hidden group-hover:scale-[1.04] transition-transform duration-300">
+          {comercio.imagen_url && !imgError ? (
+            <img
+              src={comercio.imagen_url}
+              alt={comercio.nombre}
+              loading="lazy"
+              className="w-full h-full object-contain p-2.5"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <Initials nombre={comercio.nombre} />
+          )}
+        </div>
 
         {comercio.nuevo && (
           <span className="absolute top-2 left-2 bg-amber-400 text-amber-950 text-[9px] font-extrabold tracking-wider px-2 py-0.5 rounded-full">

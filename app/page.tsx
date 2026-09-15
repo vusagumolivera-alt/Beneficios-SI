@@ -266,12 +266,14 @@ export default function HomePage() {
                       href={`/comercio/${c.id}`}
                       className="flex-shrink-0 w-[132px] bg-white rounded-[18px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 transition-all overflow-hidden"
                     >
-                      <div className="relative m-1.5 mb-0 h-[76px] rounded-xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] overflow-hidden">
-                        {c.imagen_url ? (
-                          <img src={c.imagen_url} alt={c.nombre} loading="lazy" className="absolute inset-0 w-full h-full object-contain p-3" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#1d5c3a] font-extrabold">{c.nombre.slice(0, 2).toUpperCase()}</div>
-                        )}
+                      <div className="relative m-1.5 mb-0 h-[76px] rounded-xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] flex items-center justify-center">
+                        <div className="w-[52px] h-[52px] rounded-full bg-white ring-1 ring-black/[0.06] overflow-hidden">
+                          {c.imagen_url ? (
+                            <img src={c.imagen_url} alt={c.nombre} loading="lazy" className="w-full h-full object-contain p-1.5" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[#1d5c3a] font-extrabold text-sm">{c.nombre.slice(0, 2).toUpperCase()}</div>
+                          )}
+                        </div>
                         {c.nuevo && (
                           <span className="absolute top-1.5 left-1.5 bg-amber-400 text-amber-950 text-[8px] font-extrabold tracking-wider px-1.5 py-0.5 rounded-full">NUEVO</span>
                         )}

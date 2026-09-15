@@ -8,7 +8,7 @@ import {
   InstagramLogo, Globe, NavigationArrow, IdentificationCard, Info, QrCode, Check,
 } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
-import { getCupones } from '@/lib/cupones'
+import { getCupones, appLink } from '@/lib/cupones'
 import CuponesGrid from '@/components/CuponesGrid'
 import { Initials, DiscountPill } from '@/components/BenefitCard'
 
@@ -281,9 +281,14 @@ export default function ComercioPage() {
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-[#e3ebe6] pb-safe">
         <div className="max-w-5xl mx-auto px-4 py-3 flex gap-2.5">
           {cupones ? (
-            <a href="#cupones" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
-              <QrCode size={18} weight="bold" /> Ver cupones
-            </a>
+            <>
+              <a href="#cupones" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
+                <QrCode size={18} weight="bold" /> Ver cupones
+              </a>
+              <a href={appLink(cupones)} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 text-white font-bold text-sm h-12 rounded-2xl transition-opacity hover:opacity-90" style={{ background: cupones.color }}>
+                Abrir App
+              </a>
+            </>
           ) : (
             <a href={mapsExternalUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
               <NavigationArrow size={16} weight="fill" /> Cómo llegar

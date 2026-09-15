@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, QrCode, DeviceMobile, ArrowSquareOut, CalendarBlank } from '@phosphor-icons/react'
-import type { CuponesConfig, Cupon } from '@/lib/cupones'
+import { appLink, type CuponesConfig, type Cupon } from '@/lib/cupones'
 
 function QrImage({ src, alt, className, compact = false }: { src: string; alt: string; className?: string; compact?: boolean }) {
   const [err, setErr] = useState(false)
@@ -70,8 +70,18 @@ function CuponModal({ cupon, cfg, onClose }: { cupon: Cupon; cfg: CuponesConfig;
             Escaneá el QR con la cámara del celu
           </p>
           <p className="text-[12px] text-[#6b7a72] mt-1 leading-relaxed">
-            Se abre la {cfg.appNombre} con el cupón cargado. Mostralo en caja o usalo en el autopedido.
+            Se abre la {cfg.appNombre} con el cupón cargado. Mostralo en caja, en el AutoMac o en el autopedido.
           </p>
+          <a
+            href={cupon.link || appLink(cfg)}
+            target="_blank" rel="noopener noreferrer"
+            className="mt-3 w-full h-12 flex items-center justify-center gap-2 text-white font-bold text-sm rounded-2xl transition-opacity hover:opacity-90"
+            style={{ background: cfg.color }}
+          >
+            <DeviceMobile size={18} weight="fill" />
+            {cupon.link ? 'Abrir cupón en la app' : `Abrir ${cfg.appNombre}`}
+            <ArrowSquareOut size={14} />
+          </a>
           {cupon.nota && <p className="text-[11px] text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1.5 mt-2">* {cupon.nota}</p>}
           {cfg.vence && (
             <p className="text-[11px] text-[#6b7a72] mt-3 flex items-center gap-1">
@@ -119,7 +129,7 @@ export default function CuponesGrid({ cfg }: { cfg: CuponesConfig }) {
               <QrImage compact src={c.qr} alt={`QR ${c.titulo}`} className="w-[52px] h-[52px] rounded-lg bg-white object-contain shrink-0 ring-1 ring-black/[0.04]" />
               <div className="min-w-0 flex-1 flex flex-col items-start gap-1">
                 <BeneficioPill text={c.beneficio} color={cfg.color} />
-                <p className="text-[10px] text-[#6b7a72] font-medium group-hover:text-[#1d5c3a] leading-tight">Tocá para ampliar</p>
+                <p className="text-[10px] text-[#6b7a72] font-medium group-hover:text-[#1d5c3a] leading-tight">Tocá para usar</p>
               </div>
             </div>
           </button>
