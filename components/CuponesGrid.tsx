@@ -60,17 +60,21 @@ function CuponModal({ cupon, cfg, onClose }: { cupon: Cupon; cfg: CuponesConfig;
           <div className="mt-2"><BeneficioPill text={cupon.beneficio} color={cfg.color} /></div>
         </div>
 
-        <div className="mx-5 mt-4 rounded-2xl bg-[#f5f7f6] p-4 flex items-center justify-center">
-          <QrImage src={cupon.qr} alt={`QR ${cupon.titulo}`} className="w-full max-w-[260px] aspect-square rounded-xl bg-white object-contain" />
-        </div>
+        {cfg.qrDisponibles && (
+          <div className="mx-5 mt-4 rounded-2xl bg-[#f5f7f6] p-4 flex items-center justify-center">
+            <QrImage src={cupon.qr} alt={`QR ${cupon.titulo}`} className="w-full max-w-[260px] aspect-square rounded-xl bg-white object-contain" />
+          </div>
+        )}
 
         <div className="px-5 pt-4 pb-5">
           <p className="text-[12.5px] text-[#14201a] font-semibold flex items-center gap-1.5">
             <DeviceMobile size={15} weight="fill" className="text-[#25a35f]" />
-            Escaneá el QR con la cámara del celu
+            {cfg.qrDisponibles ? 'Escaneá el QR con la cámara del celu' : `Usalo desde la ${cfg.appNombre}`}
           </p>
           <p className="text-[12px] text-[#6b7a72] mt-1 leading-relaxed">
-            Se abre la {cfg.appNombre} con el cupón cargado. Mostralo en caja o en el AutoMac.
+            {cfg.qrDisponibles
+              ? `Se abre la ${cfg.appNombre} con el cupón cargado. Mostralo en caja o en el AutoMac.`
+              : `Abrí la app, buscá esta promo en Cupones y generá el cupón. Mostralo en caja o en el AutoMac.`}
           </p>
           <a
             href={cupon.link || appLink(cfg)}
@@ -120,16 +124,20 @@ export default function CuponesGrid({ cfg }: { cfg: CuponesConfig }) {
             <div className="p-3 pb-0">
               <div className="flex items-start justify-between gap-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#6b7a72] line-clamp-1">{c.categoria}</span>
-                <span className="text-base leading-none">{c.emoji}</span>
+                {cfg.qrDisponibles && <span className="text-base leading-none">{c.emoji}</span>}
               </div>
               <h3 className="font-bold text-[#14201a] text-[13px] leading-[1.2] mt-1 line-clamp-2 min-h-[2.4em]">{c.titulo}</h3>
               {c.detalle && <p className="text-[10.5px] text-[#6b7a72] mt-0.5 line-clamp-1">{c.detalle}</p>}
             </div>
             <div className="m-2 mt-2.5 rounded-2xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] p-2 flex items-center gap-2">
-              <QrImage compact src={c.qr} alt={`QR ${c.titulo}`} className="w-[52px] h-[52px] rounded-lg bg-white object-contain shrink-0 ring-1 ring-black/[0.04]" />
+              {cfg.qrDisponibles ? (
+                <QrImage compact src={c.qr} alt={`QR ${c.titulo}`} className="w-[52px] h-[52px] rounded-lg bg-white object-contain shrink-0 ring-1 ring-black/[0.04]" />
+              ) : (
+                <div className="w-[52px] h-[52px] rounded-lg bg-white shrink-0 ring-1 ring-black/[0.04] flex items-center justify-center text-[26px]">{c.emoji}</div>
+              )}
               <div className="min-w-0 flex-1 flex flex-col items-start gap-1">
                 <BeneficioPill text={c.beneficio} color={cfg.color} />
-                <p className="text-[10px] text-[#6b7a72] font-medium group-hover:text-[#1d5c3a] leading-tight">Tocá para usar</p>
+                <p className="text-[10px] text-[#6b7a72] font-medium group-hover:text-[#1d5c3a] leading-tight">{cfg.qrDisponibles ? 'Tocá para usar' : 'Tocá para abrir la app'}</p>
               </div>
             </div>
           </button>

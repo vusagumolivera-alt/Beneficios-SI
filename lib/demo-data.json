@@ -2,7 +2,7 @@
  {
   "id": "mcdonalds-demo",
   "nombre": "McDonald's",
-  "descripcion_descuento": "Hasta 30% OFF, 2x1 y café gratis con cupones QR",
+  "descripcion_descuento": "Hasta 30% OFF, 2x1 y café gratis con cupones en la App",
   "descuento": 30,
   "rubro": "Gastronomía",
   "direccion": "Todas las sucursales del país",

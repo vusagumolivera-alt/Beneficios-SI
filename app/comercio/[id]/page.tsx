@@ -200,7 +200,7 @@ export default function ComercioPage() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-green-200">{cupones ? 'Cupones con QR' : 'Beneficio'}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-green-200">{cupones ? (cupones.qrDisponibles ? 'Cupones con QR' : 'Cupones en la app') : 'Beneficio'}</p>
                   <p className="font-bold text-[16px] leading-snug mt-1">{comercio.descripcion_descuento}</p>
                   {cupones && (
                     <a href="#cupones" className="inline-flex items-center gap-1 text-[12px] font-bold mt-2 bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full transition-colors">

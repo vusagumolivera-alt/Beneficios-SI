@@ -5,7 +5,7 @@
 INSERT INTO comercios (nombre, descripcion_descuento, descuento, rubro, direccion, localidad, dias_validos, medios_pago, condiciones, imagen_url, instagram_url, website_url, publicado, nuevo)
 VALUES (
   'McDonald''s',
-  'Hasta 30% OFF, 2x1 y café gratis con cupones QR',
+  'Hasta 30% OFF, 2x1 y café gratis con cupones en la App',
   30,
   'Gastronomía',
   'Todas las sucursales del país',

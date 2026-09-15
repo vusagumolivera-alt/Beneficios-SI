@@ -21,6 +21,7 @@ export type CuponesConfig = {
   color: string            // color de marca para acentos
   colorSuave: string       // fondo suave
   vence?: string
+  qrDisponibles: boolean   // false mientras no estén los QR: se muestra solo el botón a la app
   comoUsar: string[]
   appNombre: string
   appLinks?: { ios?: string; android?: string }
@@ -37,6 +38,7 @@ export const CUPONES: Record<string, CuponesConfig> = {
     color: '#DA291C',
     colorSuave: '#FFF4E0',
     vence: '31/12/2026',
+    qrDisponibles: false,
     appNombre: "App de McDonald's",
     appLinks: {
       ios: 'https://apps.apple.com/ar/app/mcdonalds-app/id1119426125',
@@ -44,8 +46,8 @@ export const CUPONES: Record<string, CuponesConfig> = {
     },
     appWeb: 'https://www.mcdonalds.com.ar/',
     comoUsar: [
-      'Escaneá el QR con la cámara del celu (o tocalo para abrirlo).',
-      "Se abre la App de McDonald's con el cupón ya cargado.",
+      'Elegí el cupón y tocá "Abrir App de McDonald\'s".',
+      "Buscá la promo en la sección Cupones de la App y generá el cupón.",
       'Mostrá el cupón generado en la caja o en el AutoMac.',
     ],
     cupones: [
