@@ -46,8 +46,8 @@ export const CUPONES: Record<string, CuponesConfig> = {
     },
     appWeb: 'https://www.mcdonalds.com.ar/',
     comoUsar: [
-      'Elegí el cupón y tocá "Abrir App de McDonald\'s".',
-      "Buscá la promo en la sección Cupones de la App y generá el cupón.",
+      'Elegí el cupón y tocá "Abrir cupón en la app" (o escaneá el QR desde otro celu).',
+      "Se abre la App de McDonald's con la promo ya cargada; generá el cupón.",
       'Mostrá el cupón generado en la caja o en el AutoMac.',
     ],
     cupones: [
