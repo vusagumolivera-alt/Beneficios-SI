@@ -9,8 +9,7 @@ import {
 import BenefitCard from '@/components/BenefitCard'
 import SkeletonCard from '@/components/SkeletonCard'
 import Filters, { FilterState } from '@/components/Filters'
-import HeroCarousel from '@/components/HeroCarousel'
-import LaunchBanner from '@/components/LaunchBanner'
+import HeroBanners from '@/components/HeroBanners'
 import { tieneCupones } from '@/lib/cupones'
 import { DiscountPill } from '@/components/BenefitCard'
 import BottomNav from '@/components/BottomNav'
@@ -234,13 +233,12 @@ export default function HomePage() {
 
         {activeTab === 'inicio' && !isFiltering && (
           <>
-            {/* Lanzamiento o hero */}
-            {lanzamiento ? (
-              <LaunchBanner comercio={lanzamiento} />
-            ) : (
-              <HeroCarousel
-                onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })}
-                onHighDiscountClick={handleHighDiscount}
+            {/* Banners */}
+            {!loading && (
+              <HeroBanners
+                lanzamiento={lanzamiento}
+                total={comercios.length}
+                onVerTodos={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })}
               />
             )}
 
