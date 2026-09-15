@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Heart, MapPin } from '@phosphor-icons/react'
+import { Heart, MapPin, QrCode } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
+import { tieneCupones } from '@/lib/cupones'
 
 const FAVS_KEY = 'bsi-favoritos'
 function getFavs(): Set<string> {
@@ -14,56 +15,37 @@ function saveFavs(set: Set<string>) {
   localStorage.setItem(FAVS_KEY, JSON.stringify([...set]))
 }
 
-const LOCALIDAD_COLORS: Record<string, string> = {
-  'San Isidro': 'bg-emerald-50 text-emerald-700',
-  'Martínez':   'bg-teal-50 text-teal-700',
-  'Boulogne':   'bg-green-50 text-green-700',
-  'Beccar':     'bg-lime-50 text-lime-700',
-  'Acassuso':   'bg-cyan-50 text-cyan-700',
-}
-
-function getGradient(rubro: string): string {
-  const r = rubro.toLowerCase()
-  if (r.includes('gastro') || r.includes('comida') || r.includes('pasta') || r.includes('panaderia') || r.includes('fruteria'))
-    return 'from-orange-800 to-orange-600'
-  if (r.includes('peluqueria') || r.includes('belleza') || r.includes('spa'))
-    return 'from-pink-800 to-pink-600'
-  if (r.includes('danzas') || r.includes('gimnasia'))
-    return 'from-violet-800 to-violet-600'
-  if (r.includes('helad'))
-    return 'from-cyan-800 to-cyan-600'
-  if (r.includes('farmacia') || r.includes('salud'))
-    return 'from-blue-800 to-blue-600'
-  if (r.includes('optica') || r.includes('óptica') || r.includes('ortopedia'))
-    return 'from-indigo-800 to-indigo-600'
-  if (r.includes('deporte') || r.includes('camping') || r.includes('nautica') || r.includes('pesca'))
-    return 'from-emerald-800 to-emerald-600'
-  if (r.includes('zapateria') || r.includes('indumentaria') || r.includes('textil') || r.includes('moda'))
-    return 'from-purple-800 to-purple-600'
-  if (r.includes('juguet'))
-    return 'from-amber-700 to-amber-500'
-  if (r.includes('automotor') || r.includes('moto'))
-    return 'from-slate-700 to-slate-500'
-  if (r.includes('decorac') || r.includes('regalo'))
-    return 'from-rose-700 to-rose-500'
-  return 'from-[#1d5c3a] to-[#25a35f]'
-}
-
-function Initials({ nombre }: { nombre: string }) {
+export function Initials({ nombre, size = 'md' }: { nombre: string; size?: 'md' | 'lg' }) {
   const words = nombre.trim().split(/\s+/)
   const letters = words.length >= 2 ? words[0][0] + words[1][0] : words[0].slice(0, 2)
   return (
-    <div className="w-full h-full bg-gradient-to-br from-[#1d5c3a] to-[#25a35f] flex items-center justify-center">
-      <span className="text-white font-black text-xl tracking-wide uppercase">{letters}</span>
+    <div className="w-full h-full flex items-center justify-center">
+      <span className={`text-[#1d5c3a] font-extrabold tracking-wide uppercase ${size === 'lg' ? 'text-3xl' : 'text-xl'}`}>{letters}</span>
     </div>
+  )
+}
+
+export function DiscountPill({ comercio, size = 'sm' }: { comercio: Comercio; size?: 'sm' | 'md' }) {
+  const cupones = tieneCupones(comercio.nombre)
+  const cls = size === 'md' ? 'text-sm px-3 py-1.5' : 'text-[11px] px-2.5 py-1'
+  if (cupones) {
+    return (
+      <span className={`inline-flex items-center gap-1 bg-[#14201a] text-white font-bold rounded-full ${cls}`}>
+        <QrCode size={size === 'md' ? 14 : 11} weight="bold" />
+        Cupones
+      </span>
+    )
+  }
+  return (
+    <span className={`inline-flex items-baseline bg-[#1d5c3a] text-white font-extrabold rounded-full ${cls}`}>
+      {comercio.descuento}%<span className="font-semibold text-[0.8em] ml-0.5 opacity-80">OFF</span>
+    </span>
   )
 }
 
 export default function BenefitCard({ comercio, index = 0 }: { comercio: Comercio; index?: number }) {
   const [isFav, setIsFav] = useState(false)
   const [imgError, setImgError] = useState(false)
-  const locColor = LOCALIDAD_COLORS[comercio.localidad] || 'bg-slate-50 text-slate-600'
-  const gradient = getGradient(comercio.rubro)
 
   useEffect(() => { setIsFav(getFavs().has(comercio.id)) }, [comercio.id])
 
@@ -80,54 +62,50 @@ export default function BenefitCard({ comercio, index = 0 }: { comercio: Comerci
   return (
     <Link
       href={`/comercio/${comercio.id}`}
-      className="block bg-white rounded-2xl border border-[#e2ede8] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-cardEnter"
-      style={{ animationDelay: `${Math.min(index * 50, 400)}ms` }}
+      className="group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all duration-200 animate-cardEnter overflow-hidden"
+      style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
     >
-      {/* Header gradient */}
-      <div className={`bg-gradient-to-br ${gradient} h-24 rounded-t-2xl relative`}>
-        {comercio.nuevo && (
-          <div className="absolute top-2 left-2 bg-amber-400 text-amber-900 text-[9px] font-bold px-2 py-0.5 rounded-full">
-            NUEVO
-          </div>
+      {/* Logo tile */}
+      <div className="relative m-2 mb-0 h-[116px] rounded-2xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] overflow-hidden">
+        {comercio.imagen_url && !imgError ? (
+          <img
+            src={comercio.imagen_url}
+            alt={comercio.nombre}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-contain p-5 group-hover:scale-[1.03] transition-transform duration-300"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <Initials nombre={comercio.nombre} />
         )}
-        <div className="absolute top-2 right-2 bg-white/95 rounded-xl px-2 py-0.5 shadow-sm">
-          <span className="text-[#1d5c3a] font-black text-sm leading-none">{comercio.descuento}%</span>
-          <span className="text-[#25a35f] text-[9px] font-bold ml-0.5">OFF</span>
-        </div>
+
+        {comercio.nuevo && (
+          <span className="absolute top-2 left-2 bg-amber-400 text-amber-950 text-[9px] font-extrabold tracking-wider px-2 py-0.5 rounded-full">
+            NUEVO
+          </span>
+        )}
+
         <button
           onClick={toggleFav}
-          className="absolute bottom-2 right-2 bg-black/20 hover:bg-black/35 rounded-full w-7 h-7 flex items-center justify-center transition-colors"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 backdrop-blur border border-black/[0.05] flex items-center justify-center shadow-sm hover:scale-105 transition-transform"
           aria-label={isFav ? 'Quitar favorito' : 'Guardar favorito'}
         >
-          <Heart size={13} weight={isFav ? 'fill' : 'regular'} className={isFav ? 'text-red-400' : 'text-white'} />
+          <Heart size={14} weight={isFav ? 'fill' : 'regular'} className={isFav ? 'text-red-500' : 'text-slate-500'} />
         </button>
       </div>
 
-      {/* Logo overlap */}
-      <div className="flex justify-center -mt-7 px-3 relative z-10">
-        <div className="w-14 h-14 rounded-full border-[3px] border-white shadow-md overflow-hidden bg-white shrink-0">
-          {comercio.imagen_url && !imgError ? (
-            <img
-              src={comercio.imagen_url}
-              alt={comercio.nombre}
-              className="w-full h-full object-contain p-1"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <Initials nombre={comercio.nombre} />
-          )}
-        </div>
-      </div>
-
       {/* Body */}
-      <div className="px-3 pb-3 pt-2 text-center">
-        <h3 className="font-bold text-[#1d2d24] text-[13px] leading-tight line-clamp-2">{comercio.nombre}</h3>
-        <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{comercio.rubro}</p>
-        <div className="mt-2">
-          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${locColor}`}>
-            <MapPin size={9} weight="fill" />
-            {comercio.localidad}
+      <div className="px-3.5 pt-3 pb-3.5">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-bold text-[#14201a] text-[13.5px] leading-[1.2] line-clamp-2 min-h-[2.4em]">{comercio.nombre}</h3>
+        </div>
+        <p className="text-[11px] text-[#6b7a72] mt-1 line-clamp-1">{comercio.rubro}</p>
+        <div className="mt-2.5 flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1 text-[10.5px] font-medium text-[#6b7a72] min-w-0">
+            <MapPin size={11} weight="fill" className="text-[#25a35f] shrink-0" />
+            <span className="truncate">{comercio.localidad}</span>
           </span>
+          <DiscountPill comercio={comercio} />
         </div>
       </div>
     </Link>

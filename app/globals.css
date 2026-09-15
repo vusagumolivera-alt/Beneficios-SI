@@ -5,14 +5,22 @@
   --si-green-dark: #154d2f;
   --si-green-hover: #236b43;
   --si-accent: #25a35f;
-  --si-light: #f0f7f3;
-  --si-border: #d9ede2;
+  --si-soft: #e9f4ee;
+  --si-bg: #f4f7f5;
+  --si-surface: #ffffff;
+  --si-tile: #f5f7f6;
+  --si-border: #e3ebe6;
+  --si-text: #14201a;
+  --si-muted: #6b7a72;
 }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-  background: var(--si-light);
-  color: #1e293b;
-  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--si-bg);
+  color: var(--si-text);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .line-clamp-2 {
@@ -21,13 +29,19 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Safe areas (iPhone) */
+.pb-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+.pt-safe { padding-top: max(0.75rem, env(safe-area-inset-top)); }
 
 @keyframes fadeSlide {
   from { opacity: 0; transform: translateY(6px); }
@@ -36,18 +50,28 @@ body {
 .animate-fadeSlide { animation: fadeSlide 0.4s ease; }
 
 @keyframes cardEnter {
-  from { opacity: 0; transform: translateY(18px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .animate-cardEnter { animation: cardEnter 0.35s ease both; }
+
+@keyframes sheetUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-sheetUp { animation: sheetUp 0.28s cubic-bezier(.2,.8,.2,1) both; }
 
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 .skeleton-pulse {
-  background: linear-gradient(90deg, #ddeee6 25%, #eef7f2 50%, #ddeee6 75%);
+  background: linear-gradient(90deg, #e6ede9 25%, #f1f5f3 50%, #e6ede9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
-  border-radius: 6px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cardEnter, .animate-fadeSlide, .animate-sheetUp { animation: none; }
 }

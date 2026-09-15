@@ -10,6 +10,9 @@ import BenefitCard from '@/components/BenefitCard'
 import SkeletonCard from '@/components/SkeletonCard'
 import Filters, { FilterState } from '@/components/Filters'
 import HeroCarousel from '@/components/HeroCarousel'
+import LaunchBanner from '@/components/LaunchBanner'
+import { tieneCupones } from '@/lib/cupones'
+import { DiscountPill } from '@/components/BenefitCard'
 import BottomNav from '@/components/BottomNav'
 import Link from 'next/link'
 import type { Comercio } from '@/lib/supabase'
@@ -127,9 +130,10 @@ export default function HomePage() {
     return result
   }, [comercios, filters, activeChips, activeTab, favIds])
 
-  const nuevos = useMemo(() => filtered.filter(c => c.nuevo), [filtered])
+  const lanzamiento = useMemo(() => comercios.find(c => tieneCupones(c.nombre)) || null, [comercios])
+  const nuevos = useMemo(() => filtered.filter(c => c.nuevo && c.id !== lanzamiento?.id), [filtered, lanzamiento])
   const destacados = useMemo(() =>
-    [...comercios].sort((a, b) => b.descuento - a.descuento).slice(0, 8), [comercios])
+    [...comercios].filter(c => !tieneCupones(c.nombre)).sort((a, b) => b.descuento - a.descuento).slice(0, 10), [comercios])
   const isFiltering = !!(filters.search || filters.localidad || filters.descuento || activeChips.length > 0)
 
   function handleTabChange(tab: Tab) {
@@ -141,7 +145,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f7f3]">
+    <div className="min-h-screen bg-[#f4f7f5]">
 
       {/* Header */}
       <header className="bg-[#1d5c3a] text-white sticky top-0 z-30 shadow-lg">
@@ -170,7 +174,7 @@ export default function HomePage() {
         </div>
 
         {/* Rubro chips */}
-        <div className="border-t border-white/10 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+        <div className="border-t border-white/10 overflow-x-auto no-scrollbar">
           <div className="flex gap-1 px-4 py-2 w-max sm:w-auto sm:justify-center sm:flex-wrap">
             {RUBRO_CHIPS.map(chip => {
               const isActive = chip.value === '' ? activeChips.length === 0 : activeChips.includes(chip.value)
@@ -198,8 +202,8 @@ export default function HomePage() {
         {/* Vista mapa */}
         {activeTab === 'mapa' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-[#e2ede8] shadow-sm overflow-hidden">
-              <div className="px-4 py-3 border-b border-[#e2ede8]">
+            <div className="bg-white rounded-2xl border border-[#e3ebe6] shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-[#e3ebe6]">
                 <h2 className="font-bold text-[#1d2d24] text-sm">Comercios en San Isidro</h2>
                 <p className="text-xs text-slate-400 mt-0.5">Zona del partido — {comercios.length} comercios adheridos</p>
               </div>
@@ -230,11 +234,15 @@ export default function HomePage() {
 
         {activeTab === 'inicio' && !isFiltering && (
           <>
-            {/* Hero carousel */}
-            <HeroCarousel
-              onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })}
-              onHighDiscountClick={handleHighDiscount}
-            />
+            {/* Lanzamiento o hero */}
+            {lanzamiento ? (
+              <LaunchBanner comercio={lanzamiento} />
+            ) : (
+              <HeroCarousel
+                onCtaClick={() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' })}
+                onHighDiscountClick={handleHighDiscount}
+              />
+            )}
 
             {/* Mejores descuentos — horizontal scroll */}
             {!loading && destacados.length > 0 && (
@@ -242,7 +250,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Fire size={16} weight="fill" className="text-orange-500" />
-                    <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Mejores descuentos</h2>
+                    <h2 className="text-[13px] font-extrabold text-[#14201a] uppercase tracking-wider">Mejores descuentos</h2>
                   </div>
                   <button
                     onClick={handleHighDiscount}
@@ -251,25 +259,29 @@ export default function HomePage() {
                     Ver todos <ArrowRight size={12} weight="bold" />
                   </button>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-                  {destacados.map((c, i) => (
+                <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar">
+                  {destacados.map((c) => (
                     <Link
                       key={c.id}
                       href={`/comercio/${c.id}`}
-                      className="flex-shrink-0 w-36 bg-white rounded-2xl border border-[#e2ede8] shadow-sm hover:shadow-md transition-all overflow-hidden"
+                      className="flex-shrink-0 w-[132px] bg-white rounded-[18px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 transition-all overflow-hidden"
                     >
-                      <div className="h-20 bg-gradient-to-br from-[#1d5c3a] to-[#25a35f] relative">
-                        <div className="absolute top-2 right-2 bg-white/95 rounded-xl px-2 py-0.5">
-                          <span className="text-[#1d5c3a] font-black text-sm">{c.descuento}%</span>
-                          <span className="text-[#25a35f] text-[8px] font-bold ml-0.5">OFF</span>
-                        </div>
+                      <div className="relative m-1.5 mb-0 h-[76px] rounded-xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] overflow-hidden">
+                        {c.imagen_url ? (
+                          <img src={c.imagen_url} alt={c.nombre} loading="lazy" className="absolute inset-0 w-full h-full object-contain p-3" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[#1d5c3a] font-extrabold">{c.nombre.slice(0, 2).toUpperCase()}</div>
+                        )}
                         {c.nuevo && (
-                          <div className="absolute top-2 left-2 bg-amber-400 text-amber-900 text-[8px] font-bold px-1.5 py-0.5 rounded-full">NEW</div>
+                          <span className="absolute top-1.5 left-1.5 bg-amber-400 text-amber-950 text-[8px] font-extrabold tracking-wider px-1.5 py-0.5 rounded-full">NUEVO</span>
                         )}
                       </div>
-                      <div className="p-2.5">
-                        <p className="font-bold text-[#1d2d24] text-[11px] leading-tight line-clamp-2">{c.nombre}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{c.localidad}</p>
+                      <div className="px-2.5 pt-2 pb-2.5">
+                        <p className="font-bold text-[#14201a] text-[11.5px] leading-tight line-clamp-2 min-h-[2.4em]">{c.nombre}</p>
+                        <div className="mt-1.5 flex items-center justify-between gap-1">
+                          <p className="text-[10px] text-[#6b7a72] truncate">{c.localidad}</p>
+                          <DiscountPill comercio={c} />
+                        </div>
                       </div>
                     </Link>
                   ))}
@@ -288,7 +300,7 @@ export default function HomePage() {
 
         {/* Cards grid */}
         {activeTab !== 'mapa' && loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : activeTab !== 'mapa' && filtered.length === 0 && activeTab !== 'favoritos' ? (
@@ -305,13 +317,13 @@ export default function HomePage() {
               <section>
                 <div className="flex items-center gap-2 mb-3">
                   <Star size={16} weight="fill" className="text-amber-500" />
-                  <h2 className="text-sm font-bold text-amber-600 uppercase tracking-wider">Nuevos este mes</h2>
+                  <h2 className="text-[13px] font-extrabold text-amber-600 uppercase tracking-wider">Nuevos este mes</h2>
                   <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                   {nuevos.map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
                 </div>
-                <div className="mt-5 border-t border-[#d9ede2]" />
+                <div className="mt-5 border-t border-[#e3ebe6]" />
               </section>
             )}
 
@@ -320,12 +332,12 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-3">
                 {activeTab === 'favoritos' ? (
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Mis favoritos</h2>
+                    <h2 className="text-[13px] font-extrabold text-[#6b7a72] uppercase tracking-wider">Mis favoritos</h2>
                     <span className="bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-0.5 rounded-full">{filtered.length}</span>
                   </div>
                 ) : !isFiltering ? (
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Todos los comercios</h2>
+                    <h2 className="text-[13px] font-extrabold text-[#6b7a72] uppercase tracking-wider">Todos los comercios</h2>
                     <span className="bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-0.5 rounded-full">{filtered.filter(c => !c.nuevo).length}</span>
                   </div>
                 ) : (
@@ -334,7 +346,7 @@ export default function HomePage() {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {(activeTab === 'favoritos' || isFiltering || filters.orden === 'nuevo'
                   ? filtered
                   : filtered.filter(c => !c.nuevo)
@@ -345,7 +357,7 @@ export default function HomePage() {
         ) : null}
       </main>
 
-      <footer className="pb-24 pt-5 text-center text-xs text-slate-400 border-t border-[#d9ede2]">
+      <footer className="pb-24 pt-5 text-center text-xs text-slate-400 border-t border-[#e3ebe6]">
         Programa de beneficios — Dirección de Capital Humano · Municipalidad de San Isidro
       </footer>
 
@@ -353,7 +365,7 @@ export default function HomePage() {
       {showTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-20 right-4 z-50 bg-white border border-[#d9ede2] shadow-md hover:shadow-lg text-[#1d5c3a] w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
+          className="fixed bottom-20 right-4 z-50 bg-white border border-[#e3ebe6] shadow-md hover:shadow-lg text-[#1d5c3a] w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200"
           aria-label="Volver arriba"
         >
           <ArrowUp size={18} weight="bold" />
