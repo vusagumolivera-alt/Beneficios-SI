@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft, Heart, ShareNetwork, MapPin, CalendarBlank, CreditCard,
-  InstagramLogo, Globe, NavigationArrow, IdentificationCard, Info, QrCode, Check,
+  InstagramLogo, Globe, NavigationArrow, IdentificationCard, Info, QrCode, Check, DeviceMobile,
 } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
 import { getCupones, appLink } from '@/lib/cupones'
@@ -281,14 +281,9 @@ export default function ComercioPage() {
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-[#e3ebe6] pb-safe">
         <div className="max-w-5xl mx-auto px-4 py-3 flex gap-2.5">
           {cupones ? (
-            <>
-              <a href="#cupones" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
-                <QrCode size={18} weight="bold" /> Ver cupones
-              </a>
-              <a href={appLink(cupones)} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 text-white font-bold text-sm h-12 rounded-2xl transition-opacity hover:opacity-90" style={{ background: cupones.color }}>
-                Abrir App
-              </a>
-            </>
+            <a href={appLink(cupones)} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 text-white font-bold text-sm h-12 rounded-2xl transition-opacity hover:opacity-90 whitespace-nowrap" style={{ background: cupones.color }}>
+              <DeviceMobile size={18} weight="fill" /> Abrir {cupones.appNombre}
+            </a>
           ) : (
             <a href={mapsExternalUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
               <NavigationArrow size={16} weight="fill" /> Cómo llegar
