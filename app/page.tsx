@@ -84,8 +84,9 @@ export default function HomePage() {
     } catch {}
   }, [activeTab])
 
+  // "Ver todos" de Mejores descuentos: lista completa ordenada por mayor descuento, sin filtros
   const handleHighDiscount = useCallback(() => {
-    setFilters(f => ({ ...f, descuento: '35+' }))
+    setFilters({ ...EMPTY_FILTERS, orden: 'descuento' })
     setActiveChips([])
     setTimeout(() => document.getElementById('comercios-section')?.scrollIntoView({ behavior: 'smooth' }), 50)
   }, [])
