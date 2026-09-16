@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getAdminSession } from '@/lib/auth'
+import { COMERCIOS_FIJOS } from '@/lib/comercios-fijos'
 
 function isSupabaseConfigured() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -11,7 +12,7 @@ export async function GET() {
   if (!isAdmin) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   if (!isSupabaseConfigured()) {
-    return NextResponse.json([])
+    return NextResponse.json(COMERCIOS_FIJOS.map(c => ({ ...c, fijo: true })))
   }
 
   const { createClient } = await import('@supabase/supabase-js')
@@ -26,5 +27,5 @@ export async function GET() {
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  return NextResponse.json([...COMERCIOS_FIJOS.map(c => ({ ...c, fijo: true })), ...(data || [])])
 }

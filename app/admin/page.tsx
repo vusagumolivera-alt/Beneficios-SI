@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation'
 import ComercioForm from '@/components/admin/ComercioForm'
 import type { Comercio } from '@/lib/supabase'
 
+type ComercioAdmin = Comercio & { fijo?: boolean }
+
 type Modal =
   | { type: 'add' }
   | { type: 'edit'; comercio: Comercio }
   | null
 
 export default function AdminPage() {
-  const [comercios, setComercios] = useState<Comercio[]>([])
+  const [comercios, setComercios] = useState<ComercioAdmin[]>([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState<Modal>(null)
   const [search, setSearch] = useState('')
@@ -154,7 +156,10 @@ export default function AdminPage() {
                     <tr key={c.id} className={`border-b border-[#f0f4f8] hover:bg-[#f0f7f3] transition-colors ${i % 2 === 0 ? '' : 'bg-[#fcfcfd]'}`}>
                       <td className="px-4 py-3">
                         <div className="font-medium text-slate-800">{c.nombre}</div>
-                        {c.nuevo && <span className="text-xs text-amber-600 font-medium">✨ Nuevo</span>}
+                        <div className="flex gap-2">
+                          {c.nuevo && <span className="text-xs text-amber-600 font-medium">✨ Nuevo</span>}
+                          {c.fijo && <span className="text-xs text-slate-500 font-medium" title="Definido en el código de la app, no en la base">🔒 Desde código</span>}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-slate-600 max-w-xs">
                         <span className="line-clamp-2">{c.rubro}</span>
@@ -164,6 +169,9 @@ export default function AdminPage() {
                         <span className="font-bold text-[#1d5c3a]">{c.descuento}%</span>
                       </td>
                       <td className="px-4 py-3 text-center">
+                        {c.fijo ? (
+                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">● Publicado</span>
+                        ) : (
                         <button
                           onClick={() => togglePublicado(c)}
                           className={`text-xs font-semibold px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
@@ -174,8 +182,12 @@ export default function AdminPage() {
                         >
                           {c.publicado ? '● Publicado' : '○ Oculto'}
                         </button>
+                        )}
                       </td>
                       <td className="px-4 py-3">
+                        {c.fijo ? (
+                          <div className="text-right text-xs text-slate-400">Se edita en el código</div>
+                        ) : (
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => setModal({ type: 'edit', comercio: c })}
@@ -190,6 +202,7 @@ export default function AdminPage() {
                             Eliminar
                           </button>
                         </div>
+                        )}
                       </td>
                     </tr>
                   ))}

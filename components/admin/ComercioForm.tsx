@@ -30,6 +30,28 @@ export default function ComercioForm({ initial = {}, onSubmit, onCancel, submitL
     nuevo: initial.nuevo ?? true,
   })
   const [loading, setLoading] = useState(false)
+  const [subiendo, setSubiendo] = useState(false)
+  const [errorImg, setErrorImg] = useState('')
+
+  async function subirImagen(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setSubiendo(true); setErrorImg('')
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('nombre', form.nombre)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'No se pudo subir')
+      setForm(f => ({ ...f, imagen_url: data.url }))
+    } catch (err) {
+      setErrorImg(err instanceof Error ? err.message : 'No se pudo subir la imagen')
+    } finally {
+      setSubiendo(false)
+      e.target.value = ''
+    }
+  }
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [key]: e.target.value }))
@@ -117,12 +139,24 @@ export default function ComercioForm({ initial = {}, onSubmit, onCancel, submitL
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-semibold text-slate-600 mb-1">🖼️ URL de imagen</label>
-          <input value={form.imagen_url} onChange={set('imagen_url')} className={inputCls}
-            placeholder="https://... (foto del local o logo)" />
-          {form.imagen_url && (
-            <img src={form.imagen_url} alt="preview" className="mt-2 h-24 w-full object-cover rounded-lg border border-[#d9ede2]" />
-          )}
+          <label className="block text-xs font-semibold text-slate-600 mb-1">Logo del comercio</label>
+          <div className="flex gap-3 items-start">
+            <div className="w-20 h-20 shrink-0 rounded-xl border border-[#d9ede2] bg-[#f5f7f6] overflow-hidden flex items-center justify-center">
+              {form.imagen_url
+                ? <img src={form.imagen_url} alt="" className="w-full h-full object-contain p-1.5" onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                : <span className="text-[10px] text-slate-400 text-center px-1">Sin logo</span>}
+            </div>
+            <div className="flex-1 space-y-2">
+              <label className={`inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg cursor-pointer transition-colors ${subiendo ? 'bg-slate-100 text-slate-400' : 'bg-[#e9f4ee] text-[#1d5c3a] hover:bg-[#d9ede2]'}`}>
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={subirImagen} disabled={subiendo} />
+                {subiendo ? 'Subiendo...' : 'Subir imagen desde la compu'}
+              </label>
+              <p className="text-[11px] text-slate-400">PNG, JPG, WEBP o SVG, hasta 4 MB. Ideal: logo cuadrado con fondo blanco o transparente.</p>
+              <input value={form.imagen_url} onChange={set('imagen_url')} className={inputCls}
+                placeholder="o pegá una URL pública de imagen (https://...)" />
+              {errorImg && <p className="text-xs text-red-600">{errorImg}</p>}
+            </div>
+          </div>
         </div>
 
         <div>
