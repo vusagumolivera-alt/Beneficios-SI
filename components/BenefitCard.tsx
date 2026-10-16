@@ -86,6 +86,11 @@ export default function BenefitCard({ comercio, index = 0 }: { comercio: Comerci
             NUEVO
           </span>
         )}
+        {!comercio.nuevo && comercio.cupon_codigo && (
+          <span className="absolute top-2 left-2 bg-indigo-500 text-white text-[9px] font-extrabold tracking-wider px-2 py-0.5 rounded-full">
+            ONLINE
+          </span>
+        )}
 
         <button
           onClick={toggleFav}

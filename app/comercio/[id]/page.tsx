@@ -6,6 +6,7 @@ import Link from 'next/link'
 import {
   ArrowLeft, Heart, ShareNetwork, MapPin, CalendarBlank, CreditCard,
   InstagramLogo, Globe, NavigationArrow, IdentificationCard, Info, QrCode, Check, DeviceMobile,
+  Copy, CaretRight,
 } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
 import { getCupones, appLink } from '@/lib/cupones'
@@ -57,17 +58,36 @@ export default function ComercioPage() {
   const [isFav, setIsFav] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [shared, setShared] = useState(false)
+  const [sucursales, setSucursales] = useState<Comercio[]>([])
+  const [cuponCopiado, setCuponCopiado] = useState(false)
 
   useEffect(() => {
     fetch(`/api/comercios/${id}`)
       .then(r => (r.ok ? r.json() : null))
       .then((found: Comercio | null) => {
         setComercio(found)
-        if (found) setIsFav(getFavs().has(found.id))
+        if (found) {
+          setIsFav(getFavs().has(found.id))
+          if (found.grupo_id) {
+            fetch('/api/comercios')
+              .then(r => r.json())
+              .then((all: Comercio[]) => {
+                setSucursales(all.filter(c => c.grupo_id === found.grupo_id && c.id !== found.id))
+              })
+              .catch(() => {})
+          }
+        }
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [id])
+
+  function copiarCupon() {
+    if (!comercio?.cupon_codigo) return
+    navigator.clipboard.writeText(comercio.cupon_codigo).catch(() => {})
+    setCuponCopiado(true)
+    setTimeout(() => setCuponCopiado(false), 2000)
+  }
 
   const goBack = useCallback(() => {
     if (typeof window !== 'undefined' && window.history.length > 1) router.back()
@@ -247,6 +267,66 @@ export default function ComercioPage() {
                 </Row>
               )}
             </div>
+
+            {/* Beneficio online (cupón) */}
+            {comercio.cupon_codigo && (
+              <div className="mt-4 bg-white rounded-[20px] border border-indigo-100 overflow-hidden">
+                <div className="px-4 pt-4 pb-4">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="bg-indigo-50 rounded-xl p-2 shrink-0">
+                      <Globe size={18} weight="fill" className="text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-[#14201a] text-[13px]">Beneficio online</p>
+                      <p className="text-[#4e5d55] text-xs mt-0.5">Descuento en la tienda web</p>
+                    </div>
+                  </div>
+                  <p className="text-[#4e5d55] text-[13px] mb-3">Ingresá el código al hacer tu pedido online:</p>
+                  <div className="flex-1 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                    <span className="font-black text-indigo-700 text-xl tracking-widest">{comercio.cupon_codigo}</span>
+                    <button onClick={copiarCupon} className="ml-2 text-indigo-400 hover:text-indigo-600 transition-colors" aria-label="Copiar código">
+                      {cuponCopiado
+                        ? <Check size={16} weight="bold" className="text-green-600" />
+                        : <Copy size={16} weight="regular" />}
+                    </button>
+                  </div>
+                  {cuponCopiado && <p className="text-xs text-green-600 font-semibold mt-2">Código copiado.</p>}
+                  {comercio.cupon_url && (
+                    <a
+                      href={comercio.cupon_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl transition-colors"
+                    >
+                      <Globe size={16} weight="fill" />
+                      Ir a la tienda online
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Otras sucursales */}
+            {sucursales.length > 0 && (
+              <div className="mt-4 bg-white rounded-[20px] border border-[#e3ebe6] overflow-hidden">
+                <div className="px-4 pt-4 pb-0">
+                  <p className="font-bold text-[#14201a] text-[13px]">Otras sucursales</p>
+                </div>
+                <div className="divide-y divide-[#eef3f0] mt-3">
+                  {sucursales.map(s => (
+                    <Link key={s.id} href={`/comercio/${s.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors">
+                      <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-semibold text-[#14201a] truncate">{s.direccion}</p>
+                        <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{s.localidad} · {s.dias_validos}</p>
+                      </div>
+                      <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+                <div className="h-3" />
+              </div>
+            )}
           </div>
 
           {/* Columna lateral (mapa) */}

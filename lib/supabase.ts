@@ -17,6 +17,9 @@ export type Comercio = {
   publicado: boolean
   nuevo: boolean
   created_at: string
+  cupon_codigo?: string
+  cupon_url?: string
+  grupo_id?: string
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
