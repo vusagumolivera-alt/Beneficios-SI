@@ -58,7 +58,6 @@ export default function ComercioPage() {
   const [isFav, setIsFav] = useState(false)
   const [imgError, setImgError] = useState(false)
   const [shared, setShared] = useState(false)
-  const [sucursales, setSucursales] = useState<Comercio[]>([])
   const [cuponCopiado, setCuponCopiado] = useState(false)
 
   useEffect(() => {
@@ -66,17 +65,7 @@ export default function ComercioPage() {
       .then(r => (r.ok ? r.json() : null))
       .then((found: Comercio | null) => {
         setComercio(found)
-        if (found) {
-          setIsFav(getFavs().has(found.id))
-          if (found.grupo_id) {
-            fetch('/api/comercios')
-              .then(r => r.json())
-              .then((all: Comercio[]) => {
-                setSucursales(all.filter(c => c.grupo_id === found.grupo_id && c.id !== found.id))
-              })
-              .catch(() => {})
-          }
-        }
+        if (found) setIsFav(getFavs().has(found.id))
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -306,23 +295,37 @@ export default function ComercioPage() {
               </div>
             )}
 
-            {/* Otras sucursales */}
-            {sucursales.length > 0 && (
+            {/* Sucursales inline */}
+            {comercio.sucursal_2_direccion && (
               <div className="mt-4 bg-white rounded-[20px] border border-[#e3ebe6] overflow-hidden">
                 <div className="px-4 pt-4 pb-0">
-                  <p className="font-bold text-[#14201a] text-[13px]">Otras sucursales</p>
+                  <p className="font-bold text-[#14201a] text-[13px]">Sucursales</p>
                 </div>
                 <div className="divide-y divide-[#eef3f0] mt-3">
-                  {sucursales.map(s => (
-                    <Link key={s.id} href={`/comercio/${s.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors">
-                      <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[13px] font-semibold text-[#14201a] truncate">{s.direccion}</p>
-                        <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{s.localidad} · {s.dias_validos}</p>
-                      </div>
-                      <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
-                    </Link>
-                  ))}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.direccion}, ${comercio.localidad}, Buenos Aires`)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors"
+                  >
+                    <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-[#14201a]">{comercio.direccion}</p>
+                      <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{comercio.localidad}{comercio.dias_validos ? ` · ${comercio.dias_validos}` : ''}</p>
+                    </div>
+                    <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
+                  </a>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.sucursal_2_direccion}, ${comercio.sucursal_2_localidad}, Buenos Aires`)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors"
+                  >
+                    <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-semibold text-[#14201a]">{comercio.sucursal_2_direccion}</p>
+                      <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{comercio.sucursal_2_localidad}{comercio.sucursal_2_dias ? ` · ${comercio.sucursal_2_dias}` : ''}</p>
+                    </div>
+                    <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
+                  </a>
                 </div>
                 <div className="h-3" />
               </div>

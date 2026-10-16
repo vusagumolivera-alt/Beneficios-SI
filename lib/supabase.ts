@@ -20,6 +20,9 @@ export type Comercio = {
   cupon_codigo?: string
   cupon_url?: string
   grupo_id?: string
+  sucursal_2_direccion?: string
+  sucursal_2_localidad?: string
+  sucursal_2_dias?: string
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
