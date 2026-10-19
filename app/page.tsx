@@ -104,7 +104,7 @@ export default function HomePage() {
   }, [])
 
   const localidades = useMemo(() =>
-    [...new Set(comercios.map(c => c.localidad.trim()))].sort(), [comercios])
+    [...new Set(comercios.flatMap(c => [c.localidad.trim(), ...(c.sucursal_2_localidad ? [c.sucursal_2_localidad.trim()] : [])]))].sort(), [comercios])
 
   const filtered = useMemo(() => {
     let result = comercios.filter(c => {
@@ -117,7 +117,7 @@ export default function HomePage() {
         const rubroNorm = norm(c.rubro)
         if (!activeChips.some(chip => chip.split('|').some(kw => rubroNorm.includes(kw)))) return false
       }
-      if (filters.localidad && c.localidad.trim() !== filters.localidad) return false
+      if (filters.localidad && c.localidad.trim() !== filters.localidad && c.sucursal_2_localidad?.trim() !== filters.localidad) return false
       if (filters.descuento) {
         if (filters.descuento === '35+') { if (c.descuento < 35) return false }
         else { if (c.descuento !== parseInt(filters.descuento)) return false }
