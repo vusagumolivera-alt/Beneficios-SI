@@ -14,7 +14,10 @@ import { tieneCupones } from '@/lib/cupones'
 import { DiscountPill } from '@/components/BenefitCard'
 import BottomNav from '@/components/BottomNav'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import type { Comercio } from '@/lib/supabase'
+
+const MapaTab = dynamic(() => import('@/components/MapaTab'), { ssr: false })
 
 function useCountUp(target: number) {
   const [count, setCount] = useState(0)
@@ -201,24 +204,7 @@ export default function HomePage() {
         {/* Favoritos vacío */}
         {/* Vista mapa */}
         {activeTab === 'mapa' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-[#e3ebe6] shadow-sm overflow-hidden">
-              <div className="px-4 py-3 border-b border-[#e3ebe6]">
-                <h2 className="font-bold text-[#1d2d24] text-sm">Comercios en San Isidro</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Zona del partido — {comercios.length} comercios adheridos</p>
-              </div>
-              <iframe
-                src="https://maps.google.com/maps?q=San+Isidro,+Buenos+Aires,+Argentina&output=embed&hl=es&z=13"
-                className="w-full"
-                style={{ height: '420px', border: 'none' }}
-                loading="lazy"
-                title="Mapa de San Isidro"
-              />
-            </div>
-            <p className="text-center text-xs text-slate-400 px-2">
-              Para ver la dirección exacta de cada comercio, abrí su ficha desde el inicio y tocá "Cómo llegar"
-            </p>
-          </div>
+          <MapaTab comercios={comercios} />
         )}
 
         {activeTab === 'favoritos' && !loading && filtered.length === 0 && (
