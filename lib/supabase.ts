@@ -23,6 +23,8 @@ export type Comercio = {
   sucursal_2_direccion?: string
   sucursal_2_localidad?: string
   sucursal_2_dias?: string
+  sucursal_2_descuento?: number
+  sucursal_2_descripcion?: string
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!

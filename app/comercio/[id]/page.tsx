@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ArrowLeft, Heart, ShareNetwork, MapPin, CalendarBlank, CreditCard,
   InstagramLogo, Globe, NavigationArrow, IdentificationCard, Info, QrCode, Check, DeviceMobile,
-  Copy, CaretRight,
+  Copy, CaretRight, X, Storefront,
 } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
 import { getCupones, appLink } from '@/lib/cupones'
@@ -50,6 +50,17 @@ function Row({ icon: Icon, tone = 'green', title, children }: {
   )
 }
 
+type SucInfo = {
+  num: 1 | 2
+  direccion: string
+  localidad: string
+  dias: string
+  descuento: number
+  descripcion: string
+  medios: string[]
+  mapsUrl: string
+}
+
 export default function ComercioPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
@@ -59,6 +70,8 @@ export default function ComercioPage() {
   const [imgError, setImgError] = useState(false)
   const [shared, setShared] = useState(false)
   const [cuponCopiado, setCuponCopiado] = useState(false)
+  const [selectedSuc, setSelectedSuc] = useState<SucInfo | null>(null)
+  const [sheetVisible, setSheetVisible] = useState(false)
 
   useEffect(() => {
     fetch(`/api/comercios/${id}`)
@@ -70,6 +83,24 @@ export default function ComercioPage() {
       })
       .catch(() => setLoading(false))
   }, [id])
+
+  // animate sheet open
+  useEffect(() => {
+    if (selectedSuc) {
+      requestAnimationFrame(() => setSheetVisible(true))
+    } else {
+      setSheetVisible(false)
+    }
+  }, [selectedSuc])
+
+  function openSuc(suc: SucInfo) {
+    setSelectedSuc(suc)
+  }
+
+  function closeSuc() {
+    setSheetVisible(false)
+    setTimeout(() => setSelectedSuc(null), 320)
+  }
 
   function copiarCupon() {
     if (!comercio?.cupon_codigo) return
@@ -132,8 +163,30 @@ export default function ComercioPage() {
   const medios = comercio.medios_pago ? parsePayment(comercio.medios_pago) : []
   const hasDireccion = !!comercio.direccion && !/varias|todas|sucursal/i.test(comercio.direccion)
   const q = encodeURIComponent(`${comercio.nombre}, ${comercio.direccion}, ${comercio.localidad}, Buenos Aires, Argentina`)
-  const mapUrl = `https://maps.google.com/maps?q=${q}&output=embed&hl=es`
   const mapsExternalUrl = `https://www.google.com/maps/search/?api=1&query=${q}`
+  const mapUrl = `https://maps.google.com/maps?q=${q}&output=embed&hl=es`
+
+  const hasSucursales = !!comercio.sucursal_2_direccion
+  const suc1: SucInfo | null = hasSucursales ? {
+    num: 1,
+    direccion: comercio.direccion,
+    localidad: comercio.localidad,
+    dias: comercio.dias_validos,
+    descuento: comercio.descuento,
+    descripcion: comercio.descripcion_descuento,
+    medios,
+    mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.direccion}, ${comercio.localidad}, Buenos Aires`)}`,
+  } : null
+  const suc2: SucInfo | null = hasSucursales ? {
+    num: 2,
+    direccion: comercio.sucursal_2_direccion!,
+    localidad: comercio.sucursal_2_localidad!,
+    dias: comercio.sucursal_2_dias || comercio.dias_validos,
+    descuento: comercio.sucursal_2_descuento ?? comercio.descuento,
+    descripcion: comercio.sucursal_2_descripcion || comercio.descripcion_descuento,
+    medios,
+    mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.sucursal_2_direccion}, ${comercio.sucursal_2_localidad}, Buenos Aires`)}`,
+  } : null
 
   return (
     <div className="min-h-screen bg-[#f4f7f5] pb-28">
@@ -180,12 +233,18 @@ export default function ComercioPage() {
                 <div className="flex items-center justify-center lg:justify-start gap-2 mt-3 flex-wrap">
                   <span className="inline-flex items-center gap-1.5 bg-white border border-[#e3ebe6] text-[#14201a] text-xs font-semibold px-3 py-1 rounded-full">
                     <MapPin size={12} weight="fill" className="text-[#25a35f]" />
-                    {comercio.localidad}
+                    {hasSucursales ? 'San Isidro y Martínez' : comercio.localidad}
                   </span>
-                  {comercio.dias_validos && (
+                  {!hasSucursales && comercio.dias_validos && (
                     <span className="inline-flex items-center gap-1.5 bg-white border border-[#e3ebe6] text-[#4e5d55] text-xs font-medium px-3 py-1 rounded-full">
                       <CalendarBlank size={12} weight="regular" />
                       {comercio.dias_validos}
+                    </span>
+                  )}
+                  {hasSucursales && (
+                    <span className="inline-flex items-center gap-1.5 bg-white border border-[#e3ebe6] text-[#4e5d55] text-xs font-medium px-3 py-1 rounded-full">
+                      <Storefront size={12} weight="regular" />
+                      2 sucursales
                     </span>
                   )}
                 </div>
@@ -216,6 +275,9 @@ export default function ComercioPage() {
                       Ver los {cupones.cupones.length} cupones ↓
                     </a>
                   )}
+                  {hasSucursales && (
+                    <p className="text-[12px] text-green-200 mt-1.5">Tocá una sucursal para ver los detalles</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -227,35 +289,37 @@ export default function ComercioPage() {
               </div>
             )}
 
-            {/* Info */}
-            <div className="mt-5 bg-white rounded-[20px] border border-[#e3ebe6] divide-y divide-[#eef3f0] overflow-hidden">
-              <Row icon={IdentificationCard} title="¿Cómo usar el beneficio?">
-                {cupones ? (
-                  <ol className="mt-1 space-y-1.5">
-                    {cupones.comoUsar.map((s, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="shrink-0 w-5 h-5 rounded-full bg-[#e9f4ee] text-[#1d5c3a] text-[11px] font-extrabold flex items-center justify-center">{i + 1}</span>
-                        <span>{s}</span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  'Presentá tu credencial municipal o contrato de trabajo al momento de pagar.'
-                )}
-              </Row>
-              {comercio.condiciones && (
-                <Row icon={Info} tone="amber" title="Condiciones">{comercio.condiciones}</Row>
-              )}
-              {medios.length > 0 && (
-                <Row icon={CreditCard} tone="slate" title="Medios de pago">
-                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                    {medios.map((m, i) => (
-                      <span key={i} className="bg-[#f5f7f6] border border-[#e3ebe6] text-[#4e5d55] text-[11.5px] font-medium px-2.5 py-1 rounded-lg capitalize">{m}</span>
-                    ))}
-                  </div>
+            {/* Info (solo si NO tiene sucursales, que tienen su propio detalle en el popup) */}
+            {!hasSucursales && (
+              <div className="mt-5 bg-white rounded-[20px] border border-[#e3ebe6] divide-y divide-[#eef3f0] overflow-hidden">
+                <Row icon={IdentificationCard} title="¿Cómo usar el beneficio?">
+                  {cupones ? (
+                    <ol className="mt-1 space-y-1.5">
+                      {cupones.comoUsar.map((s, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="shrink-0 w-5 h-5 rounded-full bg-[#e9f4ee] text-[#1d5c3a] text-[11px] font-extrabold flex items-center justify-center">{i + 1}</span>
+                          <span>{s}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    'Presentá tu credencial municipal o contrato de trabajo al momento de pagar.'
+                  )}
                 </Row>
-              )}
-            </div>
+                {comercio.condiciones && (
+                  <Row icon={Info} tone="amber" title="Condiciones">{comercio.condiciones}</Row>
+                )}
+                {medios.length > 0 && (
+                  <Row icon={CreditCard} tone="slate" title="Medios de pago">
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {medios.map((m, i) => (
+                        <span key={i} className="bg-[#f5f7f6] border border-[#e3ebe6] text-[#4e5d55] text-[11.5px] font-medium px-2.5 py-1 rounded-lg capitalize">{m}</span>
+                      ))}
+                    </div>
+                  </Row>
+                )}
+              </div>
+            )}
 
             {/* Beneficio online (cupón) */}
             {comercio.cupon_codigo && (
@@ -295,46 +359,66 @@ export default function ComercioPage() {
               </div>
             )}
 
-            {/* Sucursales inline */}
-            {comercio.sucursal_2_direccion && (
+            {/* Sucursales — botones que abren el popup */}
+            {hasSucursales && suc1 && suc2 && (
               <div className="mt-4 bg-white rounded-[20px] border border-[#e3ebe6] overflow-hidden">
-                <div className="px-4 pt-4 pb-0">
+                <div className="px-4 pt-4 pb-0 flex items-center justify-between">
                   <p className="font-bold text-[#14201a] text-[13px]">Sucursales</p>
+                  <span className="text-[11px] text-[#6b7a72]">Tocá para ver los detalles</span>
                 </div>
                 <div className="divide-y divide-[#eef3f0] mt-3">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.direccion}, ${comercio.localidad}, Buenos Aires`)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors"
-                  >
-                    <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-[#14201a]">{comercio.direccion}</p>
-                      <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{comercio.localidad}{comercio.dias_validos ? ` · ${comercio.dias_validos}` : ''}</p>
-                    </div>
-                    <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
-                  </a>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${comercio.sucursal_2_direccion}, ${comercio.sucursal_2_localidad}, Buenos Aires`)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors"
-                  >
-                    <MapPin size={15} weight="fill" className="text-[#25a35f] shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-[#14201a]">{comercio.sucursal_2_direccion}</p>
-                      <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{comercio.sucursal_2_localidad}{comercio.sucursal_2_dias ? ` · ${comercio.sucursal_2_dias}` : ''}</p>
-                    </div>
-                    <CaretRight size={14} weight="bold" className="text-[#4e5d55] shrink-0" />
-                  </a>
+                  {[suc1, suc2].map(suc => (
+                    <button
+                      key={suc.num}
+                      onClick={() => openSuc(suc)}
+                      className="w-full flex items-center gap-3.5 px-4 py-3.5 hover:bg-[#f8faf9] active:bg-[#f1f6f3] transition-colors text-left"
+                    >
+                      <div className="w-9 h-9 rounded-2xl bg-[#e9f4ee] flex items-center justify-center shrink-0">
+                        <MapPin size={16} weight="fill" className="text-[#1d5c3a]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-bold text-[#14201a]">{suc.direccion}</p>
+                        <p className="text-[11.5px] text-[#4e5d55] mt-0.5">{suc.localidad} · {suc.dias}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="bg-[#1d5c3a] text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full">{suc.descuento}%</span>
+                        <CaretRight size={14} weight="bold" className="text-[#b0c4b8]" />
+                      </div>
+                    </button>
+                  ))}
                 </div>
                 <div className="h-3" />
               </div>
             )}
           </div>
 
-          {/* Columna lateral (mapa) */}
+          {/* Columna lateral */}
           <aside className="mt-5 lg:mt-6 lg:sticky lg:top-20">
-            {hasDireccion ? (
+            {hasSucursales && suc1 && suc2 ? (
+              <div className="bg-white rounded-[20px] border border-[#e3ebe6] overflow-hidden">
+                <div className="px-4 pt-4 pb-3">
+                  <p className="font-bold text-[#14201a] text-[13px]">2 sucursales</p>
+                  <p className="text-[#4e5d55] text-[12px] mt-0.5">Tocá una para ver la info completa</p>
+                </div>
+                <div className="divide-y divide-[#eef3f0]">
+                  {[suc1, suc2].map(suc => (
+                    <button
+                      key={suc.num}
+                      onClick={() => openSuc(suc)}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#f8faf9] transition-colors text-left"
+                    >
+                      <MapPin size={14} weight="fill" className="text-[#25a35f] shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[12.5px] font-semibold text-[#14201a] truncate">{suc.direccion}</p>
+                        <p className="text-[11px] text-[#4e5d55]">{suc.localidad} · {suc.dias}</p>
+                      </div>
+                      <CaretRight size={13} weight="bold" className="text-[#b0c4b8] shrink-0" />
+                    </button>
+                  ))}
+                </div>
+                <div className="h-1" />
+              </div>
+            ) : hasDireccion ? (
               <div className="bg-white rounded-[20px] border border-[#e3ebe6] overflow-hidden">
                 <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -367,6 +451,13 @@ export default function ComercioPage() {
             <a href={appLink(cupones)} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 text-white font-bold text-sm h-12 rounded-2xl transition-opacity hover:opacity-90 whitespace-nowrap" style={{ background: cupones.color }}>
               <DeviceMobile size={18} weight="fill" /> Abrir {cupones.appNombre}
             </a>
+          ) : hasSucursales && suc1 ? (
+            <button
+              onClick={() => openSuc(suc1)}
+              className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors"
+            >
+              <Storefront size={16} weight="fill" /> Ver sucursales
+            </button>
           ) : (
             <a href={mapsExternalUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-sm h-12 rounded-2xl transition-colors">
               <NavigationArrow size={16} weight="fill" /> Cómo llegar
@@ -387,6 +478,134 @@ export default function ComercioPage() {
           </button>
         </div>
       </div>
+
+      {/* Bottom sheet — detalle de sucursal */}
+      {selectedSuc && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={closeSuc}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+            style={{ opacity: sheetVisible ? 1 : 0 }}
+          />
+
+          {/* Sheet */}
+          <div
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[28px] shadow-2xl transition-transform duration-300 ease-out overflow-hidden"
+            style={{ transform: sheetVisible ? 'translateY(0)' : 'translateY(100%)' }}
+          >
+            {/* Drag handle */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-[#d4e4da]" />
+            </div>
+
+            {/* Scrollable content */}
+            <div className="overflow-y-auto max-h-[82vh] pb-safe">
+
+              {/* Header */}
+              <div className="px-5 pt-3 pb-4 flex items-center gap-3.5">
+                <div className="w-14 h-14 rounded-2xl bg-white border border-[#e3ebe6] shadow-sm overflow-hidden shrink-0">
+                  {comercio.imagen_url && !imgError ? (
+                    <img src={comercio.imagen_url} alt={comercio.nombre} className="w-full h-full object-contain p-2" />
+                  ) : (
+                    <Initials nombre={comercio.nombre} />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-extrabold text-[#14201a] text-[17px] leading-tight">{comercio.nombre}</p>
+                  <p className="text-[#4e5d55] text-[13px] mt-0.5 flex items-center gap-1">
+                    <MapPin size={12} weight="fill" className="text-[#25a35f] shrink-0" />
+                    {selectedSuc.direccion}, {selectedSuc.localidad}
+                  </p>
+                </div>
+                <button
+                  onClick={closeSuc}
+                  className="w-9 h-9 rounded-full bg-[#f4f7f5] flex items-center justify-center text-[#6b7a72] hover:bg-[#e9f4ee] transition-colors shrink-0"
+                  aria-label="Cerrar"
+                >
+                  <X size={16} weight="bold" />
+                </button>
+              </div>
+
+              {/* Beneficio badge */}
+              <div className="mx-5 mb-4 rounded-[20px] bg-[#1d5c3a] text-white p-4 relative overflow-hidden">
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+                <div className="relative flex items-center gap-4">
+                  <div className="text-center leading-none shrink-0">
+                    <p className="font-extrabold text-[52px] tracking-tight leading-none">{selectedSuc.descuento}<span className="text-[26px]">%</span></p>
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-green-200 mt-0.5">OFF</p>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-green-200 mb-1">Beneficio</p>
+                    <p className="font-bold text-[15px] leading-snug">{selectedSuc.descripcion}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Info rows */}
+              <div className="mx-5 bg-[#f8faf9] rounded-[20px] divide-y divide-[#eef3f0] overflow-hidden mb-4">
+                <div className="flex items-start gap-3 px-4 py-3.5">
+                  <div className="rounded-xl p-2 shrink-0 bg-[#e9f4ee] text-[#1d5c3a]">
+                    <CalendarBlank size={16} weight="fill" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#14201a] text-[13px]">Días válidos</p>
+                    <p className="text-[#4e5d55] text-[13px] mt-0.5">{selectedSuc.dias}</p>
+                  </div>
+                </div>
+                {selectedSuc.medios.length > 0 && (
+                  <div className="flex items-start gap-3 px-4 py-3.5">
+                    <div className="rounded-xl p-2 shrink-0 bg-[#f5f7f6] text-[#6b7a72]">
+                      <CreditCard size={16} weight="fill" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-[#14201a] text-[13px]">Medios de pago</p>
+                      <div className="flex flex-wrap gap-1.5 mt-1.5">
+                        {selectedSuc.medios.map((m, i) => (
+                          <span key={i} className="bg-white border border-[#e3ebe6] text-[#4e5d55] text-[11.5px] font-medium px-2.5 py-1 rounded-lg capitalize">{m}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-3 px-4 py-3.5">
+                  <div className="rounded-xl p-2 shrink-0 bg-[#e9f4ee] text-[#1d5c3a]">
+                    <IdentificationCard size={16} weight="fill" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#14201a] text-[13px]">¿Cómo usar el beneficio?</p>
+                    <p className="text-[#4e5d55] text-[13px] mt-0.5">Presentá tu credencial municipal o contrato de trabajo al momento de pagar.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="px-5 pb-6">
+                <a
+                  href={selectedSuc.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-[#1d5c3a] hover:bg-[#236b43] text-white font-bold text-[15px] h-13 py-3.5 rounded-2xl transition-colors"
+                >
+                  <NavigationArrow size={18} weight="fill" />
+                  Cómo llegar a esta sucursal
+                </a>
+                {comercio.instagram_url && (
+                  <a
+                    href={comercio.instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2.5 flex items-center justify-center gap-2 bg-[#f4f7f5] hover:bg-[#e9f4ee] text-[#14201a] font-semibold text-[14px] h-12 rounded-2xl transition-colors"
+                  >
+                    <InstagramLogo size={17} weight="regular" />
+                    Ver en Instagram
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
