@@ -38,16 +38,19 @@ export default function SumateModal({ onClose }: Props) {
         onClick={close}
       />
 
-      {/* sheet */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-[61] bg-white rounded-t-[24px] shadow-2xl transition-transform duration-[380ms] max-h-[92vh] overflow-y-auto"
-        style={{
-          transitionTimingFunction: 'cubic-bezier(.32,.72,0,1)',
-          transform: visible ? 'translateY(0)' : 'translateY(100%)',
-        }}
-      >
-        {/* handle */}
-        <div className="w-9 h-1 rounded-full bg-[#dde8e1] mx-auto mt-3 mb-1 shrink-0" />
+      {/* wrapper: bottom-align mobile, center desktop */}
+      <div className="fixed inset-0 z-[61] flex items-end sm:items-center sm:justify-center sm:p-6 pointer-events-none">
+        {/* sheet */}
+        <div
+          className="pointer-events-auto w-full sm:w-[480px] bg-white rounded-t-[24px] sm:rounded-[24px] shadow-2xl overflow-y-auto max-h-[92vh] sm:max-h-[88vh] transition-[transform,opacity] duration-[380ms]"
+          style={{
+            transitionTimingFunction: 'cubic-bezier(.32,.72,0,1)',
+            transform: visible ? 'translateY(0)' : 'translateY(100%)',
+            opacity: visible ? 1 : 0,
+          }}
+        >
+        {/* handle (mobile only) */}
+        <div className="w-9 h-1 rounded-full bg-[#dde8e1] mx-auto mt-3 mb-1 shrink-0 sm:hidden" />
 
         {/* header */}
         <div className="flex items-start justify-between px-5 pt-3 pb-4">
@@ -121,7 +124,8 @@ export default function SumateModal({ onClose }: Props) {
             <span className="font-semibold text-[#1d5c3a]">Requisito:</span> el comercio debe estar ubicado dentro del Partido de San Isidro. La adhesión es gratuita y el municipio acompaña el proceso.
           </p>
         </div>
-      </div>
+        </div>{/* end sheet */}
+      </div>{/* end wrapper */}
     </>
   )
 }
