@@ -201,7 +201,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-5 space-y-5 pb-28">
+      <main key={activeTab} className="max-w-6xl mx-auto px-4 py-5 space-y-5 pb-28 animate-fadeSlide">
 
         {/* Favoritos vacío */}
         {/* Vista mapa */}
@@ -251,7 +251,7 @@ export default function HomePage() {
                     <Link
                       key={c.id}
                       href={`/comercio/${c.id}`}
-                      className="flex-shrink-0 w-[132px] bg-white rounded-[18px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 transition-all overflow-hidden"
+                      className="flex-shrink-0 w-[132px] bg-white rounded-[18px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:scale-[0.95] active:shadow-none active:opacity-90 transition-all duration-150 overflow-hidden"
                     >
                       <div className="relative m-1.5 mb-0 h-[76px] rounded-xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] flex items-center justify-center">
                         <div className="w-[52px] h-[52px] rounded-full bg-white ring-1 ring-black/[0.06] overflow-hidden">
@@ -365,10 +365,10 @@ export default function HomePage() {
       <a
         href="https://whatsapp.com/channel/0029VbAh4uIDp2QAfEVLmO3j"
         target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-20 left-4 z-50 flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 text-sm font-semibold"
+        className="fixed bottom-20 left-4 z-50 flex items-center gap-2 bg-white hover:bg-[#f0fdf4] text-[#128C7E] border border-[#d1f0e0] pl-3 pr-4 py-2.5 rounded-full shadow-[0_4px_16px_rgba(18,140,126,0.15)] hover:shadow-[0_6px_20px_rgba(18,140,126,0.22)] active:scale-95 transition-all duration-200 text-sm font-bold"
         aria-label="Canal de WhatsApp"
       >
-        <WhatsappLogo size={20} weight="fill" />
+        <WhatsappLogo size={18} weight="fill" className="text-[#25D366]" />
         <span className="hidden sm:inline">Canal MSI</span>
       </a>
 

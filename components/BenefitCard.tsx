@@ -62,7 +62,7 @@ export default function BenefitCard({ comercio, index = 0 }: { comercio: Comerci
   return (
     <Link
       href={`/comercio/${comercio.id}`}
-      className="group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all duration-200 animate-cardEnter overflow-hidden"
+      className="group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none active:opacity-90 transition-all duration-200 animate-cardEnter overflow-hidden"
       style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
     >
       {/* Logo tile: avatar circular uniforme para que todos los logos pesen igual */}

@@ -72,6 +72,13 @@ body {
   border-radius: 8px;
 }
 
+/* Search bar focus — slight scale + sombra premium */
+input[type="text"]:focus {
+  transform: scale(1.005);
+  box-shadow: 0 4px 16px rgba(29, 92, 58, 0.08);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-cardEnter, .animate-fadeSlide, .animate-sheetUp { animation: none; }
+  input[type="text"]:focus { transform: none; }
 }
