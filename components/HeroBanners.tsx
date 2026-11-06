@@ -88,7 +88,7 @@ export default function HeroBanners({ lanzamiento, total, onVerTodos }: { lanzam
 
   return (
     <div
-      className="relative rounded-[24px] overflow-hidden shadow-[0_12px_32px_rgba(20,32,26,0.18)] select-none"
+      className="relative rounded-[24px] overflow-hidden shadow-[0_12px_32px_rgba(20,32,26,0.18)] select-none animate-heroEnter"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={e => { touchX.current = e.touches[0].clientX; setPaused(true) }}

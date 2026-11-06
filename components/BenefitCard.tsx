@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Heart, MapPin, QrCode } from '@phosphor-icons/react'
 import type { Comercio } from '@/lib/supabase'
 import { tieneCupones } from '@/lib/cupones'
@@ -46,8 +46,26 @@ export function DiscountPill({ comercio, size = 'sm' }: { comercio: Comercio; si
 export default function BenefitCard({ comercio, index = 0 }: { comercio: Comercio; index?: number }) {
   const [isFav, setIsFav] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [entered, setEntered] = useState(false)
+  const [animDone, setAnimDone] = useState(false)
+  const linkRef = useRef<HTMLAnchorElement>(null)
 
   useEffect(() => { setIsFav(getFavs().has(comercio.id)) }, [comercio.id])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setEntered(true); setAnimDone(true); return
+    }
+    const el = linkRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setEntered(true); obs.disconnect() } },
+      { threshold: 0.05 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
   function toggleFav(e: React.MouseEvent) {
     e.preventDefault()
@@ -61,9 +79,11 @@ export default function BenefitCard({ comercio, index = 0 }: { comercio: Comerci
 
   return (
     <Link
+      ref={linkRef}
       href={`/comercio/${comercio.id}`}
-      className="group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none active:opacity-90 transition-all duration-200 animate-cardEnter overflow-hidden"
-      style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
+      className={`group block bg-white rounded-[20px] border border-[#e3ebe6] shadow-[0_1px_2px_rgba(20,32,26,0.04)] hover:shadow-[0_8px_24px_rgba(20,32,26,0.08)] hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none active:opacity-90 transition-[box-shadow,transform,opacity] duration-200 overflow-hidden ${animDone ? '' : entered ? 'animate-cardEnter' : 'opacity-0'}`}
+      style={entered && !animDone ? { animationDelay: `${Math.min(index * 50, 400)}ms` } : undefined}
+      onAnimationEnd={() => setAnimDone(true)}
     >
       {/* Logo tile: avatar circular uniforme para que todos los logos pesen igual */}
       <div className="relative m-2 mb-0 h-[116px] rounded-2xl bg-[#f5f7f6] ring-1 ring-inset ring-black/[0.04] flex items-center justify-center">

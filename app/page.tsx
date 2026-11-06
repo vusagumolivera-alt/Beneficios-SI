@@ -14,6 +14,7 @@ import { tieneCupones } from '@/lib/cupones'
 import { DiscountPill } from '@/components/BenefitCard'
 import BottomNav from '@/components/BottomNav'
 import SumateModal from '@/components/SumateModal'
+import Reveal from '@/components/Reveal'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import type { Comercio } from '@/lib/supabase'
@@ -234,6 +235,7 @@ export default function HomePage() {
             {/* Mejores descuentos — horizontal scroll */}
             {!loading && destacados.length > 0 && (
               <section>
+                <Reveal from="left">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Fire size={16} weight="fill" className="text-orange-500" />
@@ -246,6 +248,7 @@ export default function HomePage() {
                     Ver todos <ArrowRight size={11} weight="bold" />
                   </button>
                 </div>
+                </Reveal>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar">
                   {destacados.map((c) => (
                     <Link
@@ -304,11 +307,13 @@ export default function HomePage() {
             {/* Nuevos */}
             {nuevos.length > 0 && activeTab === 'inicio' && !isFiltering && filters.orden !== 'nuevo' && (
               <section>
+                <Reveal from="left">
                 <div className="flex items-center gap-2 mb-3">
                   <Star size={16} weight="fill" className="text-amber-500" />
                   <h2 className="text-[16px] font-black text-[#14201a] tracking-tight">Nuevos este mes</h2>
                   <span className="bg-[#e4f0ea] text-[#1d5c3a] text-[10px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
+                </Reveal>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                   {nuevos.map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
                 </div>
@@ -318,6 +323,7 @@ export default function HomePage() {
 
             {/* Todos */}
             <section>
+              <Reveal from="left">
               <div className="flex items-center justify-between mb-3">
                 {activeTab === 'favoritos' ? (
                   <div className="flex items-center gap-2">
@@ -335,6 +341,7 @@ export default function HomePage() {
                   </p>
                 )}
               </div>
+              </Reveal>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {(activeTab === 'favoritos' || isFiltering || filters.orden === 'nuevo'
                   ? filtered
