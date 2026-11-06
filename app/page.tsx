@@ -170,10 +170,11 @@ export default function HomePage() {
           )}
           <button
             onClick={() => setShowSumate(true)}
-            className="flex items-center gap-1.5 bg-white text-[#1d5c3a] text-[11.5px] font-black px-3 py-2 rounded-xl transition-all whitespace-nowrap shrink-0 hover:bg-green-50 shadow-sm"
+            className="flex items-center gap-1.5 bg-white text-[#1d5c3a] font-black rounded-xl transition-all shrink-0 hover:bg-green-50 shadow-sm px-2.5 py-2 sm:px-3 sm:text-[11.5px]"
+            aria-label="Sumá un comercio"
           >
-            <Storefront size={14} weight="fill" />
-            ¿Tenés un comercio?
+            <Storefront size={15} weight="fill" />
+            <span className="hidden sm:inline whitespace-nowrap">¿Tenés un comercio?</span>
           </button>
         </div>
 
