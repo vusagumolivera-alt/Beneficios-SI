@@ -13,6 +13,7 @@ import HeroBanners from '@/components/HeroBanners'
 import { tieneCupones } from '@/lib/cupones'
 import { DiscountPill } from '@/components/BenefitCard'
 import BottomNav from '@/components/BottomNav'
+import SumateModal from '@/components/SumateModal'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import type { Comercio } from '@/lib/supabase'
@@ -64,6 +65,7 @@ export default function HomePage() {
   const [showTop, setShowTop] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>('inicio')
   const [favIds, setFavIds] = useState<Set<string>>(new Set())
+  const [showSumate, setShowSumate] = useState(false)
   const filtersRef = useRef<HTMLDivElement>(null)
   const displayCount = useCountUp(comercios.length)
 
@@ -166,14 +168,13 @@ export default function HomePage() {
               <p className="text-green-300 text-[9px] font-semibold uppercase tracking-wide">comercios</p>
             </div>
           )}
-          <a
-            href="https://tesi.sanisidro.gob.ar/tramites/nuevo/fortalecimiento_comercio_local"
-            target="_blank" rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors whitespace-nowrap shrink-0"
+          <button
+            onClick={() => setShowSumate(true)}
+            className="flex items-center gap-1.5 bg-white text-[#1d5c3a] text-[11.5px] font-black px-3 py-2 rounded-xl transition-all whitespace-nowrap shrink-0 hover:bg-green-50 shadow-sm"
           >
-            <Storefront size={14} weight="regular" />
-            Sumate
-          </a>
+            <Storefront size={14} weight="fill" />
+            ¿Tenés un comercio?
+          </button>
         </div>
 
         {/* Rubro chips */}
@@ -372,6 +373,8 @@ export default function HomePage() {
 
       {/* Bottom Nav */}
       <BottomNav active={activeTab} onChange={handleTabChange} />
+
+      {showSumate && <SumateModal onClose={() => setShowSumate(false)} />}
     </div>
   )
 }
