@@ -237,13 +237,13 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Fire size={16} weight="fill" className="text-orange-500" />
-                    <h2 className="text-[13px] font-extrabold text-[#14201a] uppercase tracking-wider">Mejores descuentos</h2>
+                    <h2 className="text-[16px] font-black text-[#14201a] tracking-tight">Mejores descuentos</h2>
                   </div>
                   <button
                     onClick={handleHighDiscount}
-                    className="text-xs text-[#25a35f] font-semibold flex items-center gap-0.5"
+                    className="text-[11.5px] text-[#1d5c3a] font-bold flex items-center gap-1 bg-[#e4f0ea] px-3 py-1.5 rounded-full hover:bg-[#d5e8dc] transition-colors"
                   >
-                    Ver todos <ArrowRight size={12} weight="bold" />
+                    Ver todos <ArrowRight size={11} weight="bold" />
                   </button>
                 </div>
                 <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar">
@@ -306,8 +306,8 @@ export default function HomePage() {
               <section>
                 <div className="flex items-center gap-2 mb-3">
                   <Star size={16} weight="fill" className="text-amber-500" />
-                  <h2 className="text-[13px] font-extrabold text-amber-600 uppercase tracking-wider">Nuevos este mes</h2>
-                  <span className="bg-amber-100 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
+                  <h2 className="text-[16px] font-black text-[#14201a] tracking-tight">Nuevos este mes</h2>
+                  <span className="bg-[#e4f0ea] text-[#1d5c3a] text-[10px] font-bold px-2 py-0.5 rounded-full">{nuevos.length}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                   {nuevos.map((c, i) => <BenefitCard key={c.id} comercio={c} index={i} />)}
@@ -321,13 +321,13 @@ export default function HomePage() {
               <div className="flex items-center justify-between mb-3">
                 {activeTab === 'favoritos' ? (
                   <div className="flex items-center gap-2">
-                    <h2 className="text-[13px] font-extrabold text-[#6b7a72] uppercase tracking-wider">Mis favoritos</h2>
-                    <span className="bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-0.5 rounded-full">{filtered.length}</span>
+                    <h2 className="text-[16px] font-black text-[#14201a] tracking-tight">Mis favoritos</h2>
+                    <span className="bg-[#e4f0ea] text-[#1d5c3a] text-[10px] font-bold px-2 py-0.5 rounded-full">{filtered.length}</span>
                   </div>
                 ) : !isFiltering ? (
                   <div className="flex items-center gap-2">
-                    <h2 className="text-[13px] font-extrabold text-[#6b7a72] uppercase tracking-wider">Todos los comercios</h2>
-                    <span className="bg-slate-100 text-slate-500 text-[11px] font-bold px-2 py-0.5 rounded-full">{filtered.filter(c => !c.nuevo).length}</span>
+                    <h2 className="text-[16px] font-black text-[#14201a] tracking-tight">Todos los comercios</h2>
+                    <span className="bg-[#e4f0ea] text-[#1d5c3a] text-[10px] font-bold px-2 py-0.5 rounded-full">{filtered.filter(c => !c.nuevo).length}</span>
                   </div>
                 ) : (
                   <p className="text-sm text-slate-500">

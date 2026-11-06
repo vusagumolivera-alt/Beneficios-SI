@@ -37,8 +37,8 @@ export function DiscountPill({ comercio, size = 'sm' }: { comercio: Comercio; si
     )
   }
   return (
-    <span className={`inline-flex items-baseline bg-[#1d5c3a] text-white font-extrabold rounded-full ${cls}`}>
-      {comercio.descuento}%<span className="font-semibold text-[0.8em] ml-0.5 opacity-80">OFF</span>
+    <span className={`inline-flex items-baseline bg-[#e4f0ea] text-[#1a5235] font-extrabold rounded-full ${cls}`}>
+      {comercio.descuento}%<span className="font-semibold text-[0.8em] ml-0.5 opacity-60">OFF</span>
     </span>
   )
 }

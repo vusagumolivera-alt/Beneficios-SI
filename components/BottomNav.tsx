@@ -20,20 +20,23 @@ export default function BottomNav({
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-[#d9ede2] flex">
-      {items.map(({ key, label, Icon }) => (
-        <button
-          key={key}
-          onClick={() => onChange(key)}
-          className={`flex-1 flex flex-col items-center gap-0.5 py-3 transition-colors ${
-            active === key ? 'text-[#1d5c3a]' : 'text-slate-400 hover:text-slate-600'
-          }`}
-          aria-label={label}
-        >
-          <Icon size={22} weight={active === key ? 'fill' : 'regular'} />
-          <span className="text-[10px] font-semibold">{label}</span>
-        </button>
-      ))}
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#e8f0eb] flex pb-safe">
+      {items.map(({ key, label, Icon }) => {
+        const isActive = active === key
+        return (
+          <button
+            key={key}
+            onClick={() => onChange(key)}
+            className="flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors"
+            aria-label={label}
+          >
+            <div className={`flex items-center justify-center w-14 h-7 rounded-full transition-all duration-200 ${isActive ? 'bg-[#e4f0ea]' : ''}`}>
+              <Icon size={20} weight={isActive ? 'fill' : 'regular'} className={isActive ? 'text-[#1d5c3a]' : 'text-slate-400'} />
+            </div>
+            <span className={`text-[10px] font-semibold transition-colors ${isActive ? 'text-[#1d5c3a]' : 'text-slate-400'}`}>{label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
